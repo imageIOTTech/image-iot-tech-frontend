@@ -1,0 +1,113 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/fonts/Audiowide-Regular.ttf",
+      "sha1": "651503b7a0a89f49f78f14d04c62f811853573cd"
+    },
+    {
+      "path": "src/assets/fonts/DMSerifText-Italic.ttf",
+      "sha1": "9831d1dfa193ea2f3137ed122387efada0ba3144"
+    },
+    {
+      "path": "src/assets/fonts/DMSerifText-Regular.ttf",
+      "sha1": "9ea45f47df2fdae5a9a69e56801ee9d55f9cc576"
+    },
+    {
+      "path": "src/assets/fonts/PlayfairDisplay-Black.ttf",
+      "sha1": "8447710fac88b58e7f3b6f034ceda7eb3a036f4c"
+    },
+    {
+      "path": "src/assets/fonts/PlayfairDisplay-BlackItalic.ttf",
+      "sha1": "ea79a434bf4c907e18f51823de5c0ccce89ecf0c"
+    },
+    {
+      "path": "src/assets/fonts/PlayfairDisplay-Bold.ttf",
+      "sha1": "fb74d7e889a2c24dc08d5b931c620d47e607d11a"
+    },
+    {
+      "path": "src/assets/fonts/PlayfairDisplay-BoldItalic.ttf",
+      "sha1": "20080e453bfd141821b7686f516993b6d812113e"
+    },
+    {
+      "path": "src/assets/fonts/PlayfairDisplay-ExtraBold.ttf",
+      "sha1": "a65d3cc7e11169ae1bfc88db81005077afd020d2"
+    },
+    {
+      "path": "src/assets/fonts/PlayfairDisplay-ExtraBoldItalic.ttf",
+      "sha1": "c72c7e1a0582b0c8a65327b35dfdabff2e4744a7"
+    },
+    {
+      "path": "src/assets/fonts/PlayfairDisplay-Italic.ttf",
+      "sha1": "dd11369827ff1e0ba4071a275c5b3645b1ce6486"
+    },
+    {
+      "path": "src/assets/fonts/PlayfairDisplay-Medium.ttf",
+      "sha1": "8bf13110d20940f886ae02a07ec6068f4028740d"
+    },
+    {
+      "path": "src/assets/fonts/PlayfairDisplay-MediumItalic.ttf",
+      "sha1": "c01f61ddb79e4cef74325f043731143af3190919"
+    },
+    {
+      "path": "src/assets/fonts/PlayfairDisplay-Regular.ttf",
+      "sha1": "96a2e660869a872971935d18105d64eadd693ddb"
+    },
+    {
+      "path": "src/assets/fonts/PlayfairDisplay-SemiBold.ttf",
+      "sha1": "b50e2c15ddb338b15f08df6c2c37ce35f698148f"
+    },
+    {
+      "path": "src/assets/fonts/PlayfairDisplay-SemiBoldItalic.ttf",
+      "sha1": "a8d06a7536ea96a72e38112a2fcadf19504b0093"
+    },
+    {
+      "path": "src/assets/fonts/PlaywriteAUSA-ExtraLight.ttf",
+      "sha1": "08cf1743c4a7cdeac114630878e97dbed4e876c1"
+    },
+    {
+      "path": "src/assets/fonts/PlaywriteAUSA-Light.ttf",
+      "sha1": "416292901fab5ea7a66ac8ddcc1d9e6f325e9698"
+    },
+    {
+      "path": "src/assets/fonts/PlaywriteAUSA-Regular.ttf",
+      "sha1": "0f53346e9e736ccee9d97017511ba4a333ae72cb"
+    },
+    {
+      "path": "src/assets/fonts/PlaywriteAUSA-Thin.ttf",
+      "sha1": "01cfc1572486b4c637b7de7ee09857406027c496"
+    },
+    {
+      "path": "src/assets/fonts/PlaywriteIN-ExtraLight.ttf",
+      "sha1": "8069e16b02217216a13da3d73fc5674168e82105"
+    },
+    {
+      "path": "src/assets/fonts/PlaywriteIN-Light.ttf",
+      "sha1": "08be1a93b2064f2cd104ccb81c5a81bc9a309f8a"
+    },
+    {
+      "path": "src/assets/fonts/PlaywriteIN-Regular.ttf",
+      "sha1": "10d738bed9500ed5471ed4d36b96580d8ee80120"
+    },
+    {
+      "path": "src/assets/fonts/PlaywriteIN-Thin.ttf",
+      "sha1": "b604d9e31232df77649b79d0f604e4ca2531ef31"
+    },
+    {
+      "path": "src/assets/fonts/PlaywriteVN-ExtraLight.ttf",
+      "sha1": "7683a4749d16a29186ac29d0247e6e6700c9a11f"
+    },
+    {
+      "path": "src/assets/fonts/PlaywriteVN-Light.ttf",
+      "sha1": "78b744c6b0c858a098b2511ef75302f0763dc79f"
+    },
+    {
+      "path": "src/assets/fonts/PlaywriteVN-Regular.ttf",
+      "sha1": "b50c332c8045b2875aabe48bcdb3f09e5f69ff0f"
+    },
+    {
+      "path": "src/assets/fonts/PlaywriteVN-Thin.ttf",
+      "sha1": "16a59965b79a130465ada62cafd284510752c577"
+    }
+  ]
+}
