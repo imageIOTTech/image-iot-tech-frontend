@@ -1,34 +1,57 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import { Constants } from '../utils'
 import { colors } from '../styles'
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/Store';
 
-const Header = () => {
+type HeaderProps = {
+  saveImage: () => void,
+  shareImage: () => void,
+  undo: () => void,
+  redo: () => void,
+  profile: () => void,
+  edit: boolean,
+}
 
-  const [isEdit, setIsEdit] = useState(true);
+const Header: React.FC<HeaderProps> = (props) => {
+
+  const { saveImage, shareImage, undo, redo, profile, edit } = props;
+
+  const [isEdit, setIsEdit] = useState<Boolean>(edit);
+
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   return (
     <View style={styles.container}>
-      <View style={styles.leftHeader}></View>
+      <View style={styles.leftHeader}>
+        <TouchableOpacity style = { styles.btnUser} onPress={profile}>
+          <Image source={
+            isAuthenticated ?
+              require('../assets/imgs/a.jpg') :
+              require('../assets/imgs/User-Avatar.png')
+          } style={styles.imgAvatar} />
+        </TouchableOpacity>
+      </View>
       <View style={styles.rightHeader}>
         {
           isEdit ?
             <View style={styles.step}>
-              <TouchableOpacity style={[styles.btn, styles.btnUndone]}>
+              <TouchableOpacity style={[styles.btn, styles.btnUndone]} onPress={undo}>
                 <MaterialIcon name="undo" size={24} color={colors.black} />
               </TouchableOpacity>
-              <TouchableOpacity style={[styles.btn, styles.btnRecover]}>
+              <TouchableOpacity style={[styles.btn, styles.btnRecover]} onPress={redo}>
                 <MaterialIcon name="redo" size={24} color={colors.black} />
               </TouchableOpacity>
             </View>
             : null
         }
-        <TouchableOpacity style={[styles.btn, styles.btnShare]}>
+        <TouchableOpacity style={[styles.btn, styles.btnShare]} onPress={shareImage}>
           <EntypoIcon name="share" size={24} color={colors.black} />
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.btn, styles.btnSave]}>
+        <TouchableOpacity style={[styles.btn, styles.btnSave]} onPress={saveImage}>
           <MaterialIcon name="save-alt" size={24} color={colors.black} />
         </TouchableOpacity>
       </View>
@@ -48,7 +71,12 @@ const styles = StyleSheet.create({
   },
   leftHeader: {
     height: '100%',
-    backgroundColor: 'red',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginLeft: 12,
+  },
+  btnUser: {
+
   },
   rightHeader: {
     height: '100%',
@@ -67,15 +95,22 @@ const styles = StyleSheet.create({
     marginRight: 24,
   },
   btnSave: {
-    marginRight: 12,},
+    marginRight: 12,
+  },
   step: {
     flexDirection: 'row',
   },
   btnUndone: {
     marginRight: 24,
   },
-  btnRecover:{
+  btnRecover: {
     marginRight: 24,
   },
+  imgAvatar: {
+    width: 32,
+    height: 32,
+    resizeMode: 'contain',
+    borderRadius: 50,
+  }
 
 })

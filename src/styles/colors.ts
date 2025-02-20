@@ -4,7 +4,9 @@ const colors = {
     background: '#f0f0f0',
     text: '#333',
     white: '#ffffff',
-    black: '#000000'
+    black: '#000000',
+    silver: '#D3D3D3',
+    yellow: '#FFFF00',
   };
   
   export default colors;
