@@ -9,6 +9,7 @@ import { colors } from '../styles';
 import AntIcon from 'react-native-vector-icons/AntDesign'
 import FontIcon from 'react-native-vector-icons/FontAwesome'
 import { OtpInput } from 'react-native-otp-entry';
+import { SERVER_PORT } from '../config/env';
 
 type LoginScreenProp = StackNavigationProp<MainStackParamList, "Login">;
 
@@ -26,7 +27,7 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
   const handleLogin = async () => {
     try {
       if (email && password) {
-        const response = await fetch('http://10.0.2.2:9090/api/user/login',
+        const response = await fetch(`${SERVER_PORT}/user/login`,
           {
             method: 'POST',
             headers: {

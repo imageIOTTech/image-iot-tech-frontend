@@ -2,19 +2,19 @@ import React, { Component } from "react";
 import { StyleSheet, View, Animated, PanResponder, GestureResponderEvent, PanResponderGestureState, PanResponderInstance } from "react-native";
 
 interface DraggableItemProps {
-    children: React.ReactNode; // Nhận vào một node component khác
-    onDown: () => void; // Để bỏ funtion vào khi thả phần tử ra
+    children: React.ReactNode; // Add children node
+    onDown: () => void; // Funtion when drop down 
 }
 
 interface DraggableItemState {
-    pan: Animated.ValueXY; // Để theo dõi vị trí của phần tử kéo
-    opacity: Animated.Value; // Để điều chỉnh độ mờ của phần tử
-    showItem: boolean; // Để điều khiển việc hiển thị phần tử
+    pan: Animated.ValueXY; // To track the position of the drag element
+    opacity: Animated.Value; // Adjust element opacity
+    showItem: boolean; // Controls the display of elements
 }
 
 class DraggableItem extends Component<DraggableItemProps, DraggableItemState> {
     private _val: { x: number, y: number };
-    private panResponder?: PanResponderInstance; // Để quản lý sự kiện kéo
+    private panResponder?: PanResponderInstance; // Drag event management
 
     constructor(props: DraggableItemProps) {
         super(props);
@@ -43,7 +43,7 @@ class DraggableItem extends Component<DraggableItemProps, DraggableItemState> {
                 { useNativeDriver: false }
             ),
             onPanResponderRelease: () => {
-                // Bạn có thể thêm logic khi thả phần tử (ví dụ, vào vùng drop area)
+                // Logic when dropping an element (e.g. into a drop area)
                 this.props.onDown()
             }
         });

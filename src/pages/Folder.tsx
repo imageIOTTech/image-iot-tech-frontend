@@ -67,7 +67,7 @@ const Folder: React.FC<FolderProps> = ({ navigation }) => {
             const backAction = () => {
             setPasrentFolder(0);
             console.log('Back')
-            return true; // Chặn hành động mặc định
+            return true; // Block back action
           };
         const backHandle = BackHandler.addEventListener('hardwareBackPress',backAction);
 
@@ -89,27 +89,6 @@ const Folder: React.FC<FolderProps> = ({ navigation }) => {
 
         //local
         setDataFolder([...dataFolder, newFolder]);
-
-        // Gửi yêu cầu POST để thêm folder mới
-        // fetch('http://10.0.2.2:9090/api/user/addfolder', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify(newFolder)
-        // })
-        //     .then(response => response.json())
-        //     .then(data => {
-        //         // Sau khi thêm thành công, gọi API lấy lại danh sách folders
-        //         fetch('https://example.com/api/folders')
-        //             .then(response => response.json())
-        //             .then(updatedFolders => {
-        //                 // Cập nhật state với dữ liệu mới nhất từ server
-        //                 setDataFolder(updatedFolders);
-        //             })
-        //             .catch(error => console.error('Error fetching folders:', error));
-        //     })
-        //     .catch(error => console.error('Error adding folder:', error));
 
     }
 

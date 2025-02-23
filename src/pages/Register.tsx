@@ -6,8 +6,7 @@ import Font5Icon from 'react-native-vector-icons/FontAwesome5'
 import { colors } from '../styles'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../store/Store'
-import { loginSuccess } from '../store/authSlice'
-import User from '../models/User'
+import { SERVER_PORT } from '../config/env'
 
 type RegisterScreenProp = StackNavigationProp<MainStackParamList, 'Register'>;
 
@@ -38,7 +37,7 @@ const Register: React.FC<RegisterProps> = ({ navigation }) => {
                 Alert.alert('Do not leave information blank');
             }
             else {
-                const response = await fetch('http://10.0.2.2:9090/api/user/register',
+                const response = await fetch(`${SERVER_PORT}/user/register`,
                     {
                         method: 'POST',
                         headers: {
@@ -54,11 +53,6 @@ const Register: React.FC<RegisterProps> = ({ navigation }) => {
                     });
                 if (response.status === 201) {
                     const json = response.json();
-                    //Save user and token
-                    // dispatch(loginSuccess(response))
-                    // json.then((response) => {
-                    //     console.log(response)
-                    // });
                     Alert.alert('SingUp Success', 'Please login again');
                     navigation.navigate('Login');
                 }

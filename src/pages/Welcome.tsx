@@ -14,8 +14,6 @@ type WelcomeProps = {
 
 const Welcome: React.FC<WelcomeProps> = ({ navigation }) => {
 
-  const dispatch = useDispatch<AppDispatch>();
-
   const handleGuest = () => {
     navigation.navigate('Edit');
   };
@@ -57,18 +55,6 @@ const Welcome: React.FC<WelcomeProps> = ({ navigation }) => {
           <Text style={styles.textBtn}>Guest</Text>
         </TouchableOpacity>
       </View>
-      {/* <View style={styles.boxOtherLogin}>
-        <View style={styles.boxLine}>
-          <View style={styles.line}></View>
-          <Text style={styles.textOr}></Text>
-          <View style={styles.line}></View>
-        </View>
-        <View style= {styles.boxBtnOtherLogin}>
-            <TouchableOpacity style={styles.btnOtherLogin}>
-                <Image source={} style = {styles.imgLogo} />
-            </TouchableOpacity>
-        </View>
-      </View> */}
     </View>
   )
 }

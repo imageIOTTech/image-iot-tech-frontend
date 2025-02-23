@@ -17,6 +17,11 @@ import ImageZoom from 'react-native-image-pan-zoom';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/Store';
+import { ColorText, FontText, OpacityText, Ratio, TextSize } from '../components/features';
+import ToolText from '../components/features/ToolText';
+import FooterEdit from '../components/features/FooterEdit';
+import ChangeEdit from '../components/features/ChangeEdit';
+import { SERVER_PORT } from '../config/env';
 
 
 type EditScreenProp = StackNavigationProp<MainStackParamList, 'Edit'>;
@@ -24,68 +29,6 @@ type EditScreenProp = StackNavigationProp<MainStackParamList, 'Edit'>;
 type EditProps = {
   navigation: EditScreenProp;
 };
-
-const DataFont: string[] = ['Audiowide-Regular',
-  'DMSeriText-Italic',
-  'DMSeriText-Regular',
-  'PlayfairDisplay-Black',
-  'PlayfairDisplay-BlackItalic',
-  'PlayfairDisplay-Bold',
-  'PlayfairDisplay-BoldItalic',
-  'PlayfairDisplay-ExtraBold',
-  'PlayfairDisplay-ExtraBoldItalic',
-  'PlayfairDisplay-Italic',
-  'PlayfairDisplay-Medium',
-  'PlayfairDisplay-MediumItalic',
-  'PlayfairDisplay-Regular',
-  'PlayfairDisplay-SemiBold',
-  'PlayfairDisplay-SemiBoldItalic',
-  'PlaywriteAUSA-ExtraLight',
-  'PlaywriteAUSA-Light',
-  'PlaywriteAUSA-Regular',
-  'PlaywriteAUSA-Thin',
-  'PlaywriteIN-ExtraLight',
-  'PlaywriteIN-Light',
-  'PlaywriteIN-Regular',
-  'PlaywriteIN-Thin',
-  'PlaywriteVN-ExtraLight',
-  'PlaywriteVN-Light',
-  'PlaywriteVN-Regular',
-  'PlaywriteVN-Thin',
-]
-
-const DataColor: string[] = [
-  "#FF0000", // Đỏ đậm
-  "#FF4500", // Cam đỏ
-  "#FF6347", // Cà chua
-  "#FF7F50", // San hô
-  "#FFA07A", // Cam nhạt
-  "#FFD700", // Vàng đậm
-  "#FFFF00", // Vàng
-  "#FFFFE0", // Vàng nhạt
-  "#00FF00", // Xanh lá đậm
-  "#32CD32", // Xanh lá chanh
-  "#98FB98", // Xanh nhạt
-  "#00FFFF", // Xanh cyan
-  "#4682B4", // Xanh dương đậm
-  "#1E90FF", // Xanh dương
-  "#87CEFA", // Xanh da trời nhạt
-  "#0000FF", // Xanh dương đậm
-  "#8A2BE2", // Tím xanh
-  "#9400D3", // Tím đậm
-  "#BA55D3", // Màu hoa cà
-  "#DDA0DD", // Tím nhạt
-  "#FF1493", // Hồng đậm
-  "#FF69B4", // Hồng tươi
-  "#FFB6C1", // Hồng nhạt
-  "#800000", // Nâu đậm
-  "#A52A2A", // Nâu
-  "#D2691E", // Nâu đất
-  "#F4A460", // Nâu nhạt
-  "#FFF5EE", // Trắng hồng
-  "#708090", // Xám đậm
-  "#D3D3D3"  // Xám nhạt
-];
 
 const Edit: React.FC<EditProps> = ({ navigation }) => {
 
@@ -134,7 +77,7 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
   }
 
   const getRefreshToken = async () => {
-    const response = await fetch('http://10.0.2.2:9090/api/user/refresh-token', {
+    const response = await fetch(`${SERVER_PORT}/user/refresh-token`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -158,7 +101,7 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
   //get refresh token
   useEffect(() => {
 
-    setInterval(getRefreshToken, 5000);
+    // setInterval(getRefreshToken, 5000);
 
   }, [])
 
@@ -271,36 +214,6 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
     }
   }
 
-  const handleActiveColor = (color: String) => {
-    try {
-      if (selectedColor == '' || selectedColor != color) {
-        setSelectedColor(color);
-        console.log(color)
-      } else {
-        setSelectedColor('');
-      }
-    } catch (error) {
-      console.log("Error handle active color: " + error);
-    }
-  };
-
-  const renderItemFont = ({ item }: { item: string }) => {
-    return (
-      <TouchableOpacity style={styles.boxFontItem} onPress={() => { setFontText(item); }}>
-        <Text style={[styles.textFont, { fontFamily: item }]}>Aa</Text>
-      </TouchableOpacity>
-    )
-  }
-
-  const renderItemColor = ({ item }: { item: string }) => {
-    return (
-      <TouchableOpacity
-        style={[styles.boxColorItem,
-        { backgroundColor: item },
-        { borderWidth: selectedColor == item ? 0.5 : 0 }]}
-        onPress={() => handleActiveColor(item)} />
-    )
-  }
 
   const captureLogo = () => {
     setItemIsEdit('');
@@ -360,32 +273,7 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
     }
   }
 
-  // useEffect(() => {
-  //   if (!image) openImageLibrary('Photos');
-  //   return () => { }
-  // }, [])
-
-
-  // Mở thư viện ảnh
-  const openImageLibrary = async (text: string) => {
-    launchImageLibrary({ mediaType: 'photo', selectionLimit: 1 }, async (response) => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.errorCode) {
-        console.log('Image Picker Error: ', response.errorMessage);
-      } else if (response.assets && response.assets.length > 0) {
-        const uri = response.assets[0].uri;
-        if (text == 'Photos') {
-          setImage(uri)
-        }
-        else {
-          addComponentLogo(uri)
-        }
-      } else {
-        console.log('No assets found in response');
-      }
-    });
-  };
+  
 
   const editTextValue = () => {
     setIsEditText(false);
@@ -398,7 +286,6 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
     } else {
       addComponentText();
     }
-    // addComponentText();
   }
 
   // Edit logo text 
@@ -443,7 +330,7 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
       props: {
         style: [
           { fontSize: 30, color: colors.black },
-          { fontFamily: fontText, color: selectedColor, opacity: opacityValue } // Sử dụng fontText hiện tại
+          { fontFamily: fontText, color: selectedColor, opacity: opacityValue } // Use current fontText
         ],
         children: valueText
       }
@@ -477,12 +364,22 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
     }));
   };
 
-  const noSaveChange = () => {
+  const handleNoSaveChange = () => {
     setSaveChange(false);
     setIsToolText(false);
     setIsEditText(false)
     itemIsEdit ? removeComponent(itemIsEdit) : null;
     resetText();
+    setIsRatio(false);
+    setIsActive('')
+  }
+
+  const handleSaveChange = () => {
+    setSaveChange(false);
+    setIsToolText(false);
+    editTextStyle(itemIsEdit);
+    setItemIsEdit('');
+    falseToolText();
     setIsRatio(false);
     setIsActive('')
   }
@@ -601,8 +498,6 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
                   })}
                   <Image source={{ uri: image }}
                     style={[{
-                      // width: dimensions?.width,
-                      // height: dimensions?.height,
                       width: valueRatio > 0 ? '100%' : dimensions?.width,
                       height: valueRatio > 0 ? null : dimensions?.height,
                       resizeMode: valueRatio > 0 ? 'cover' : 'contain',
@@ -627,7 +522,7 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
               value={valueText}
               onChangeText={(text) => { setValueText(text) }} />
             <View style={{ flexDirection: 'row' }}>
-              <TouchableOpacity style={[styles.btnEditText]} onPress={noSaveChange}>
+              <TouchableOpacity style={[styles.btnEditText]} onPress={handleNoSaveChange}>
                 <IonIcon name="close-outline" size={30} color={colors.black} />
               </TouchableOpacity>
               <TouchableOpacity style={styles.btnEditText} onPress={editTextValue}>
@@ -639,167 +534,67 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
 
         {
           isTextSize && isToolText ?
-            <View style={styles.boxTextSize}>
-              <FontIcon name='text-height' size={30} color={colors.gray} />
-              <Slider
-                style={styles.sliderTextSize}
-                minimumValue={16}
-                maximumValue={50}
-                step={2}
-                value={textSize}
-                onValueChange={(value) => setTextSize(value)}
-                minimumTrackTintColor={colors.gray}
-                maximumTrackTintColor={colors.silver}
-                thumbTintColor={colors.gray}
-              />
-            </View>
+            <TextSize
+              value={textSize}
+              maxValue={50}
+              minValue={16}
+              step={2}
+              onChangeValue={(value: number) => setTextSize(value)}
+            />
             : null
         }
         {
           isOpacityText && isToolText ?
-            <View style={styles.boxOpacityText}>
-              <MaterialIcon name='opacity' size={30} color={colors.gray} />
-              <Slider
-                style={styles.sliderOpacityText}
-                minimumValue={0}
-                maximumValue={1}
-                step={0.1}
-                value={opacityValue}
-                onValueChange={(value) => setOpacityValue(value)}
-                minimumTrackTintColor={colors.gray}
-                maximumTrackTintColor={colors.silver}
-                thumbTintColor={colors.gray}
-              />
-            </View>
+            <OpacityText
+              maxValue={1}
+              minValue={0}
+              value={opacityValue}
+              step={0.1}
+              onChangeValue={(value: number) => setOpacityValue(value)}
+            />
             : null
         }
         {
           isRatio ?
-            <View style={styles.boxRatio}>
-              <ScrollView horizontal style={styles.scrollRotio}>
-                {/* <TouchableOpacity style={styles.boxRatioItem}>
-                  <MaterialIcon name="crop-free" size={30} color={colors.gray} />
-                  <Text>Free size</Text>
-                </TouchableOpacity> */}
-                <TouchableOpacity style={styles.boxRatioItem} onPress={() => setValueRatio(0)}>
-                  <MaterialIcon name="crop-original" size={30} color={colors.gray} />
-                  <Text>Original</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.boxRatioItem} onPress={() => setValueRatio(1 / 1)}>
-                  <MaterialIcon name="crop-din" size={30} color={colors.gray} />
-                  <Text>1:1</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.boxRatioItem} onPress={() => setValueRatio(16 / 9)}>
-                  <MaterialIcon name="crop-16-9" size={30} color={colors.gray} />
-                  <Text>16:9</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.boxRatioItem} onPress={() => setValueRatio(3 / 2)}>
-                  <MaterialIcon name="crop-3-2" size={30} color={colors.gray} />
-                  <Text>3:2</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.boxRatioItem} onPress={() => setValueRatio(5 / 4)}>
-                  <MaterialIcon name="crop-5-4" size={30} color={colors.gray} />
-                  <Text>5:4</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.boxRatioItem} onPress={() => setValueRatio(7 / 5)}>
-                  <MaterialIcon name="crop-7-5" size={30} color={colors.gray} />
-                  <Text>7:5</Text>
-                </TouchableOpacity>
-              </ScrollView>
-            </View>
+            <Ratio
+              onChangeValue={(value: number) => setValueRatio(value)}
+            />
             : null
         }
         {
           isColorText && isToolText ?
-            <View style={styles.boxColor}>
-              <FlatList
-                horizontal
-                data={DataColor}
-                keyExtractor={(item) => item}
-                renderItem={renderItemColor}
-              />
-            </View>
+            <ColorText
+              onChangeValue={(value: string) => setSelectedColor(value)}
+            />
             : null
         }
         {
           isFontText && isToolText ?
-            <View style={styles.boxFont}>
-              <FlatList
-                data={DataFont}
-                horizontal
-                keyExtractor={(item) => item}
-                renderItem={renderItemFont}
-              />
-            </View>
+            <FontText
+              onChangeValue={(value: string) => setFontText(value)}
+            />
             : null
         }
         {
           isToolText ?
-            <View style={styles.boxToolText}>
-              <ScrollView horizontal style={styles.scrollToolText} showsHorizontalScrollIndicator={false}>
-                <TouchableOpacity style={styles.boxToolTextItem} onPress={() => { handleActiveToolText('download') }}>
-                  <MaterialIcon name="download" size={30} color={colors.gray} />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.boxToolTextItem} onPress={() => { handleActiveToolText('font') }}>
-                  <IonIcon name="text" size={30} color={colors.gray} />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.boxToolTextItem} onPress={() => { handleActiveToolText('color') }}>
-                  <IonIcon name="color-palette-outline" size={30} color={colors.gray} />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.boxToolTextItem} onPress={() => { handleActiveToolText('edit') }}>
-                  <MaterialIcon name="edit" size={30} color={colors.gray} />
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.boxToolTextItem} onPress={() => { handleActiveToolText('opacity') }}>
-                  <MaterialIcon name='opacity' size={30} color={colors.gray} />
-                </TouchableOpacity>
-              </ScrollView>
-            </View>
+            <ToolText
+              onChangeValue={(value: string) => handleActiveToolText(value)}
+            />
             : null
         }
         {
           saveChange == false ?
-            <View style={styles.boxFooterEdit}>
-              <TouchableOpacity id='Photos' style={[styles.itemBoxEdit]} onPress={() => { openImageLibrary("Photos") }}>
-                <FontIcon name="photo" size={18} color={isActive == 'Photos' ? colors.black : colors.gray} />
-                <Text style={[styles.textBoxEdit, isActive == 'Photos' ? { color: colors.black } : { color: colors.gray }]}>Photos</Text>
-              </TouchableOpacity>
-              <TouchableOpacity id='Logos' style={[styles.itemBoxEdit,]} onPress={() => { openImageLibrary("Logos") }}>
-                <FontIcon name="file-image-o" size={18} color={isActive == 'Logos' ? colors.black : colors.gray} />
-                <Text style={[styles.textBoxEdit, isActive == 'Logos' ? { color: colors.black } : { color: colors.gray }]} >Logos</Text>
-              </TouchableOpacity>
-              <TouchableOpacity id='Text' style={[styles.itemBoxEdit,]} onPress={() => { handleActiveTool('Text') }}>
-                <IonIcon name="text" size={18} color={isActive == 'Text' ? colors.black : colors.gray} />
-                <Text style={[styles.textBoxEdit, isActive == 'Text' ? { color: colors.black } : { color: colors.gray }]} >Text</Text>
-              </TouchableOpacity>
-              <TouchableOpacity id='Ratio' style={[styles.itemBoxEdit,]} onPress={() => handleActiveTool('Ratio')}>
-                <MaterialIcon name="photo-size-select-large" size={18} color={isActive == 'Ratio' ? colors.black : colors.gray} />
-                <Text style={[styles.textBoxEdit, isActive == 'Ratio' ? { color: colors.black } : { color: colors.gray }]} >Ratio</Text>
-              </TouchableOpacity>
-            </View>
+            <FooterEdit 
+            image={image}
+            uriImage={(value : string) => setImage(value)}
+            uriLogo={(value : string) => addComponentLogo(value)}
+            handleActiveTool={(value:string) =>handleActiveTool(value)}
+            />
             :
-            <View style={[styles.boxFooterEdit, { padding: 5 }]}>
-              <TouchableOpacity style={[styles.boxSaveChange,]}
-                onPress={() => {
-                  // setSaveChange(false);
-                  // setIsToolText(false);
-                  // removeComponent(itemIsEdit);
-                  // resetText();
-                  noSaveChange()
-                }}>
-                <IonIcon name="close-outline" size={30} color={colors.black} />
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.boxSaveChange,]} onPress={() => {
-                setSaveChange(false);
-                setIsToolText(false);
-                editTextStyle(itemIsEdit);
-                setItemIsEdit('');
-                falseToolText();
-                setIsRatio(false);
-                setIsActive('')
-              }}>
-                <IonIcon name="checkmark" size={30} color={colors.black} />
-              </TouchableOpacity>
-            </View>
+            <ChangeEdit
+            onPressNo={handleNoSaveChange}
+            onPressSave={handleSaveChange}
+            />
         }
       </View>
     </View>
@@ -834,122 +629,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  boxFooterEdit: {
-    width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: colors.white,
-    borderTopWidth: 0.2,
-  },
-  itemBoxEdit: {
-    padding: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  textBoxEdit: {
-    fontSize: 12,
-    fontWeight: '400',
-    color: colors.gray,
-  },
-  boxSaveChange: {
 
-  },
-  boxToolText: {
-    position: 'absolute',
-    top: 0,
-    marginTop: -65,
-    height: 65,
-    backgroundColor: colors.white,
-  },
-  scrollToolText: {
-    height: 100,
-  },
-  boxToolTextItem: {
-    width: 100,
-    height: 65,
-    margin: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  boxFont: {
-    position: 'absolute',
-    top: 0,
-    marginTop: -130,
-    height: 75,
-  },
-  boxFontItem: {
-    width: 100,
-    height: 65,
-    backgroundColor: colors.white,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  textFont: {
-    fontSize: 16,
-  },
-  scrollRotio: {
-    height: 100,
-  },
-  boxRatio: {
-    position: 'absolute',
-    top: 0,
-    marginTop: -75,
-    height: 75,
-    backgroundColor: colors.white,
-  },
-  boxRatioItem: {
-    width: 100,
-    height: 65,
-    margin: 5,
-    borderWidth: 0.5,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  boxColor: {
-    height: 75,
-    backgroundColor: colors.white,
-    position: 'absolute',
-    top: 0,
-    marginTop: -130,
-  },
-  boxColorItem: {
-    width: 50,
-    height: 50,
-    margin: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  boxOpacityText: {
-    position: 'absolute',
-    top: 0,
-    marginTop: -140,
-    width: '100%',
-    height: 75,
-    flexDirection: 'row',
-    backgroundColor: colors.white,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  sliderOpacityText: {
-    width: '90%',
-  },
-  boxTextSize: {
-    position: 'absolute',
-    top: 0,
-    marginTop: -75,
-    width: '100%',
-    height: 75,
-    flexDirection: 'row',
-    backgroundColor: colors.white,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  sliderTextSize: {
-    width: '90%'
-  },
   btnDeleteLogo: {
     width: 24,
     height: 24,

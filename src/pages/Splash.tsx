@@ -15,8 +15,6 @@ type SplashProps = {
 const Splash: React.FC<SplashProps> = ({navigation}) => {
     useEffect(() => {
         const splash = setTimeout(() => {
-            //
-            console.log("Splash");
             navigation.navigate("Welcome");
         }, 2000);
     }, [])

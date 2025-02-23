@@ -9,6 +9,7 @@ import { AppDispatch } from '../store/Store';
 import { RouteProp } from '@react-navigation/native';
 import Font5Icon from 'react-native-vector-icons/FontAwesome5'
 import { loginSuccess } from '../store/authSlice';
+import { SERVER_PORT } from '../config/env';
 
 type OtpScreenProp = StackNavigationProp<MainStackParamList, 'Otp'>;
 type OtpScreenRouterProp = RouteProp<MainStackParamList, 'Otp'>;
@@ -27,7 +28,7 @@ const Otp: React.FC<OtpProps> = ({ navigation, route}) => {
     const handleVerify = async () => {
         try {
             if (optValue.length == 6 && optValue) {
-                const response = await fetch('http://10.0.2.2:9090/api/user/verify-otp',
+                const response = await fetch(`${SERVER_PORT}/user/verify-otp`,
                     {
                         method: 'POST',
                         headers: {

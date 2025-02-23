@@ -11,15 +11,6 @@ const Home: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {/* <Text style={styles.text}>Home Screen</Text>
-      <Button
-        title="Go to Profile"
-        onPress={() => navigation.navigate('Profile', { userId: '12345' })}
-      />
-      <Button
-        title="Go to Edit"
-        onPress={() => navigation.navigate('Edit')}
-      /> */}
     </View>
   );
 };

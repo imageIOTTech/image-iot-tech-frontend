@@ -25,8 +25,6 @@ const MainNavigator: React.FC = () => {
 
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
-  console.log("isAuthenticated: " + isAuthenticated);
-
   const MainNaviga = () => {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
