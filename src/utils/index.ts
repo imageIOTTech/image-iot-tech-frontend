@@ -1,3 +1,4 @@
 import Constants from "./constants";
 
-export {Constants, };
+
+export {Constants };
