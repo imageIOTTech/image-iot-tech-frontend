@@ -24,44 +24,41 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
 
   const dispatch = useDispatch<AppDispatch>();
 
-  // const handleLogin = async () => {
-  //   try {
-  //     if (email && password) {
-  //       const response = await fetch(`${SERVER_PORT}/user/login`,
-  //         {
-  //           method: 'POST',
-  //           headers: {
-  //             Accept: 'application/json',
-  //             'Content-Type': 'application/json',
-  //           },
-  //           body: JSON.stringify({
-  //             email: email,
-  //             password: password,
-  //           })
-  //         });
-  //       const json = response.json();
-  //       if (response.status === 200) {
-  //         //Save user and token
-  //         json.then((data) => {
-  //           console.log(data)
-  //           navigation.navigate('Otp', { email });
-  //         })
-  //       }
-  //       else {
-  //         Alert.alert('Login fail', 'Email or password incorrect');
-  //       }
-  //     }
-  //     else {
-  //       Alert.alert('Login fail', 'Do not leave information blank');
-  //     }
-  //   } catch (error) {
-  //     console.log('Error:' + error);
-  //   }
-  // };
+  const handleLogin = async () => {
+    try {
+      if (email && password) {
+        const response = await fetch(`${SERVER_PORT}/user/login`,
+          {
+            method: 'POST',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: email,
+              password: password,
+            })
+          });
+        const json = response.json();
+        if (response.status === 200) {
+          //Save user and token
+          json.then((data) => {
+            console.log(data)
+            navigation.navigate('Otp', { email });
+          })
+        }
+        else {
+          Alert.alert('Login fail', 'Email or password incorrect');
+        }
+      }
+      else {
+        Alert.alert('Login fail', 'Do not leave information blank');
+      }
+    } catch (error) {
+      console.log('Error:' + error);
+    }
+  };
 
-  const handleLogin = () => {
-    navigation.navigate('Otp', {email});
-  }
 
   const handleRegister = () => {
     navigation.navigate('Register');
