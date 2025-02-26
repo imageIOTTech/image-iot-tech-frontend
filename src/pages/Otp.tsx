@@ -25,41 +25,45 @@ const Otp: React.FC<OtpProps> = ({ navigation, route}) => {
 
     const dispatch = useDispatch<AppDispatch>();
 
-    const handleVerify = async () => {
-        try {
-            if (optValue.length == 6 && optValue) {
-                const response = await fetch(`${SERVER_PORT}/user/verify-otp`,
-                    {
-                        method: 'POST',
-                        headers: {
-                            Accept: 'application/json',
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            email,
-                            otp: optValue
-                        })
-                    });
-                if (response.status === 200) {
-                    const json = response.json();
-                    //Save user and token
-                    json.then((result) => {
-                        console.log(result)
-                        dispatch(loginSuccess(result));
-                        navigation.navigate('Edit');
-                    });
-                }
-                else {
-                    Alert.alert('Otp fail', 'Please enter your code again');
-                }
-            }
-            else {
-                Alert.alert('Code is too short', 'Please enter code 6 numbers');
-            }
-        } catch (error) {
-            console.log('Error: ' + error);
-        }
-    }
+    // const handleVerify = async () => {
+    //     try {
+    //         if (optValue.length == 6 && optValue) {
+    //             const response = await fetch(`${SERVER_PORT}/user/verify-otp`,
+    //                 {
+    //                     method: 'POST',
+    //                     headers: {
+    //                         Accept: 'application/json',
+    //                         'Content-Type': 'application/json',
+    //                     },
+    //                     body: JSON.stringify({
+    //                         email,
+    //                         otp: optValue
+    //                     })
+    //                 });
+    //             if (response.status === 200) {
+    //                 const json = response.json();
+    //                 //Save user and token
+    //                 json.then((result) => {
+    //                     console.log(result)
+    //                     dispatch(loginSuccess(result));
+    //                     navigation.navigate('Home');
+    //                 });
+    //             }
+    //             else {
+    //                 Alert.alert('Otp fail', 'Please enter your code again');
+    //             }
+    //         }
+    //         else {
+    //             Alert.alert('Code is too short', 'Please enter code 6 numbers');
+    //         }
+    //     } catch (error) {
+    //         console.log('Error: ' + error);
+    //     }
+    // }
+
+    const handleVerify = () => {
+        navigation.navigate('Home')
+    };
 
     const handleResendCode = () => { };
 

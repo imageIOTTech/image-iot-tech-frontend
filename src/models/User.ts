@@ -1,8 +1,8 @@
-type User = {
+type UserModel = {
     name: String,
     email: String,
     password: String,
     phonenumber: String,
 }
 
-export default User
+export default UserModel
