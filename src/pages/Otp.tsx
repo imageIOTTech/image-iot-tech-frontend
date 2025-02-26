@@ -46,7 +46,7 @@ const Otp: React.FC<OtpProps> = ({ navigation, route}) => {
                     json.then((result) => {
                         console.log(result)
                         dispatch(loginSuccess(result));
-                        navigation.navigate('Edit');
+                        navigation.navigate('Home');
                     });
                 }
                 else {

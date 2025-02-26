@@ -60,5 +60,63 @@ const DataColor: string[] = [
     "#D3D3D3"
 ];
 
+const DataImage = [
+    {
+        id: 1,
+        uri: require("../assets/imgs/a.jpg"),
+    },
+    {
+        id: 2,
+        uri: require("../assets/imgs/a.jpg"),
+    },
+    {
+        id: 3,
+        uri: require("../assets/imgs/a.jpg"),
+    },
+    {
+        id: 4,
+        uri: require("../assets/imgs/a.jpg"),
+    },
+    {
+        id: 5,
+        uri: require("../assets/imgs/a.jpg"),
+    },
+    {
+        id: 6,
+        uri: require("../assets/imgs/a.jpg"),
+    },
+    {
+        id: 7,
+        uri: require("../assets/imgs/a.jpg"),
+    },
+]
 
-export { DataFont, DataColor }
+const DataFolder = [
+    {
+        id: 1,
+        name: 'Word spaces',
+        userId: 1234,
+        parent: 0,
+    },
+    {
+        id: 2,
+        name: 'Word spaces',
+        userId: 1234,
+        parent: 0,
+    },
+    {
+        id: 3,
+        name: 'Word spaces',
+        userId: 1234,
+        parent: 0,
+    },
+    {
+        id: 4,
+        name: 'Word spaces',
+        userId: 1234,
+        parent: 1,
+    },
+]
+
+
+export { DataFont, DataColor , DataImage, DataFolder}

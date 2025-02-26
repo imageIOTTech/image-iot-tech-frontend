@@ -9,45 +9,14 @@ import FeatherIcon from 'react-native-vector-icons/Feather'
 import { colors } from '../styles';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store/Store';
+import { DataFolder } from '../utils/data';
+import FolderModel from '../models/Folder';
 
 type FolderScreenProp = StackNavigationProp<MainStackParamList, 'Folder'>;
 
 type FolderProps = {
     navigation: FolderScreenProp;
 };
-
-const DataFolder = [
-    {
-        id: 1,
-        name: 'Word spaces',
-        userId: 1234,
-        parent: 0,
-    },
-    {
-        id: 2,
-        name: 'Word spaces',
-        userId: 1234,
-        parent: 0,
-    },
-    {
-        id: 3,
-        name: 'Word spaces',
-        userId: 1234,
-        parent: 0,
-    },
-    {
-        id: 4,
-        name: 'Word spaces',
-        userId: 1234,
-        parent: 1,
-    },
-]
-
-type Folder = {
-    id: number,
-    name: string,
-    parent: number,
-}
 
 const Folder: React.FC<FolderProps> = ({ navigation }) => {
 
@@ -57,7 +26,7 @@ const Folder: React.FC<FolderProps> = ({ navigation }) => {
     const [nameFolder, setNameFolder] = useState('');
     const [dataFolder, setDataFolder] = useState(DataFolder);
     const [isSelectedFolder, setIsSelectedFolder] = useState(false);
-    const [folderIsSelected, setFolderIsSelected] = useState<Folder>({ id: 0, name: '', parent: 0 });
+    const [folderIsSelected, setFolderIsSelected] = useState<FolderModel>({ id: 0, name: '', parent: 0 });
     const [renameFolder, setRenameFolder] = useState('');
     const [isEditFolder, setIsEditFolder] = useState(false);
     const [parentFolder, setPasrentFolder] = useState(0)
@@ -69,6 +38,7 @@ const Folder: React.FC<FolderProps> = ({ navigation }) => {
             console.log('Back')
             return true; // Block back action
           };
+
         const backHandle = BackHandler.addEventListener('hardwareBackPress',backAction);
 
         return () => {
@@ -92,11 +62,6 @@ const Folder: React.FC<FolderProps> = ({ navigation }) => {
 
     }
 
-    useEffect(() => {
-        console.log(dataFolder)
-        return () => { }
-    }, [dataFolder])
-
     const handleBackProfile = () => {
         navigation.navigate('Profile');
     };
@@ -111,31 +76,28 @@ const Folder: React.FC<FolderProps> = ({ navigation }) => {
         setDataFolder(dataFolderLate);
     };
 
-    const folderSelected = (folder: Folder) => {
+    const folderSelected = (folder: FolderModel) => {
         setFolderIsSelected(folder);
         setIsSelectedFolder(true);
     };
 
-    const handleFolderSelection = (item: Folder) => {
+    const handleFolderSelection = (item: FolderModel) => {
         if (isSelectedFolder) {
-
             setFolderIsSelected({ id: 0, name: '', parent: 0 });
             setIsSelectedFolder(false);
         }
         setPasrentFolder(item.id);
-        console.log('first selected folder')
     };
 
     useEffect(() => {
         const dataTemp = DataFolder.filter((folder) => folder.parent == parentFolder);
         setDataFolder(dataTemp);
-        console.log(dataTemp);
         return () => { }
     }, [parentFolder])
 
 
 
-    const renderItemFolder = ({ item }: { item: Folder }) => {
+    const renderItemFolder = ({ item }: { item: FolderModel }) => {
         return (
             <TouchableOpacity key={item.id}
                 onPress={() => handleFolderSelection(item)}
@@ -145,7 +107,7 @@ const Folder: React.FC<FolderProps> = ({ navigation }) => {
                 ]}
             >
                 <View style={styles.leftItem} pointerEvents='none'>
-                    <EntypoIcon name='folder' size={34} color={'#FFFF00'} />
+                    <EntypoIcon name='folder' size={34} color={colors.golden} />
                     <Text style={styles.txtNameFolders}>{item.name}</Text>
                 </View>
                 <Font5Icon name='chevron-right' size={24} color={colors.black} />

@@ -7,6 +7,7 @@ const colors = {
     black: '#000000',
     silver: '#D3D3D3',
     yellow: '#FFFF00',
+    golden: '#FFCC00'
   };
   
   export default colors;
