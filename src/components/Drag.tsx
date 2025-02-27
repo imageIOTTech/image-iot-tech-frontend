@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Animated, PanResponder, GestureResponderEvent, PanResponderGestureState, PanResponderInstance } from "react-native";
-
+import { StyleSheet, Animated, PanResponder, PanResponderInstance } from "react-native";
 interface DraggableItemProps {
     children: React.ReactNode; // Add children node
     onDown: () => void; // Funtion when drop down 
@@ -15,6 +14,7 @@ interface DraggableItemState {
 class DraggableItem extends Component<DraggableItemProps, DraggableItemState> {
     private _val: { x: number, y: number };
     private panResponder?: PanResponderInstance; // Drag event management
+    private panListenerId?: string;
 
     constructor(props: DraggableItemProps) {
         super(props);
@@ -44,12 +44,19 @@ class DraggableItem extends Component<DraggableItemProps, DraggableItemState> {
             ),
             onPanResponderRelease: () => {
                 // Logic when dropping an element (e.g. into a drop area)
+                this.state.pan.flattenOffset();
                 this.props.onDown()
             }
         });
 
-
     }
+
+    componentWillUnmount() {
+        if (this.panListenerId) {
+            this.state.pan.removeListener(this.panListenerId);
+        }
+    }
+
 
     render() {
         const panStyle = {

@@ -59,6 +59,7 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
     }
   };
 
+
   const handleRegister = () => {
     navigation.navigate('Register');
   }

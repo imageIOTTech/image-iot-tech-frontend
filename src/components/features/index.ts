@@ -4,4 +4,6 @@ import Ratio from "./Ratio";
 import FontText from "./FontText";
 import ColorText from "./ColorText";
 
-export { TextSize, OpacityText, Ratio, FontText, ColorText}
+import LogoSize from "./LogoSize";
+
+export { TextSize, OpacityText, Ratio, FontText, ColorText, LogoSize}
