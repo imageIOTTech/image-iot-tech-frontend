@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Alert, Modal, TextInput, UIManager, findNodeHandle } from 'react-native';
 import { MainStackParamList } from '../navigation/MainNavigator';
-import { Draggable, Header } from '../components';
+import { ComponentImage, ComponentText, Draggable, Header } from '../components';
 import { Constants } from '../utils';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import { colors } from '../styles';
@@ -13,7 +13,7 @@ import ImageZoom from 'react-native-image-pan-zoom';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store/Store';
-import { ColorText, ComponentImage, ComponentText, Element, FontText, LogoSize, OpacityText, Ratio, TextSize } from '../components/features';
+import { ColorText, Element, FontText, LogoSize, OpacityText, Ratio, TextSize } from '../components/features';
 import ToolText from '../components/features/ToolText';
 import FooterEdit from '../components/features/FooterEdit';
 import ChangeEdit from '../components/features/ChangeEdit';
@@ -27,13 +27,13 @@ import StrokeEditModel from '../models/StrokeEdit';
 import { addComponent, deleteComponent, updatePositionComponent, updateStyleComponent, updateValueComponent } from '../store/projectSlice';
 import { fetchRefreshToken } from '../hooks/fetchUser';
 
-type TestScreenProp = StackNavigationProp<MainStackParamList, 'Test'>;
+type EditScreenProp = StackNavigationProp<MainStackParamList, 'Edit'>;
 
-type TestProps = {
-  navigation: TestScreenProp;
+type EditProps = {
+  navigation: EditScreenProp;
 };
 
-const Test: React.FC<TestProps> = ({ navigation }) => {
+const Edit: React.FC<EditProps> = ({ navigation }) => {
 
   const dataComponent = useSelector((state: RootState) => state.project.components);
 
@@ -69,7 +69,7 @@ const Test: React.FC<TestProps> = ({ navigation }) => {
   const [opacityText, setOpacityText] = useState(1);
 
   //Size text
-  const [isSizeTest, setIsSizeTest] = useState(false);
+  const [isSizeText, setIsSizeText] = useState(false);
   const [sizeText, setSizeText] = useState(30);
 
   //Tool text
@@ -85,19 +85,16 @@ const Test: React.FC<TestProps> = ({ navigation }) => {
 
 
   //Edit Text Logo
-  const [componentStyles, setComponentStyles] = useState<{ [key: string]: any }>({});
   const [isItemFocus, setIsItemFocus] = useState<string | null>('');
 
   //Edit Image Logo
   const [isZoomImage, setIsZoomImage] = useState(false);
   const [dimensionsLogo, setDimensionsLogo] = useState<{ width: number; height: number }>({ width: 100, height: 100 });
   const [zoomValue, setZoomValue] = useState<number>(100);
-  const [positionValue, setPositionValue] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
 
   //Get and Refesh Token
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-  const accessToken = useSelector((state: RootState) => state.auth.accessToken);
-  const refreshToken = useSelector((state: RootState) => state.auth.refreshToken);
+  const refreshToken = useSelector((state: RootState) => state.auth.user.refreshToken);
 
   //Get Offset of draw
   const [isDraw, setIsDraw] = useState(false);
@@ -107,14 +104,13 @@ const Test: React.FC<TestProps> = ({ navigation }) => {
 
   //List components
   const [listComponent, setListComponent] = useState<ComponentModel[]>([]);
-  const componentRef = useRef(null);
 
   //Type component focus
   const [typeComponent, setTypeComponent] = useState('');
 
   //Style stroke
   const [widthStroke, setWidthStroke] = useState<number>(3);
-  const [coloStroke, setColorStroke] = useState(colors.black);
+  const [colorStroke, setColorStroke] = useState(colors.black);
 
   useEffect(() => {
     setComponents(dataComponent); // Async data with Redux
@@ -175,7 +171,7 @@ const Test: React.FC<TestProps> = ({ navigation }) => {
     setIsFontText(false);
     setIsColorText(false);
     setIsEditText(false);
-    setIsSizeTest(false);
+    setIsSizeText(false);
     setIsOpacityText(false);
   }
 
@@ -249,7 +245,7 @@ const Test: React.FC<TestProps> = ({ navigation }) => {
           case 'font': { setIsFontText(true) } break;
           case 'color': { setIsColorText(true) } break;
           case 'edit': { setIsEditText(true); } break;
-          case 'size': { setIsSizeTest(true) } break;
+          case 'size': { setIsSizeText(true) } break;
           case 'opacity': { setIsOpacityText(true) } break;
           default:
             break;
@@ -363,7 +359,7 @@ const Test: React.FC<TestProps> = ({ navigation }) => {
 
     const originStyle = {
       width: widthStroke,
-      color: coloStroke,
+      color: colorStroke,
     }
 
     setIsItemFocus(key);
@@ -747,7 +743,7 @@ const Test: React.FC<TestProps> = ({ navigation }) => {
             /> : null
         }
         {
-          isSizeTest && isToolText ?
+          isSizeText && isToolText ?
             <TextSize
               value={sizeText}
               maxValue={50}
@@ -897,4 +893,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Test;
+export default Edit;
