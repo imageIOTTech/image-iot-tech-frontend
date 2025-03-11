@@ -52,27 +52,6 @@ class DraggableItem extends Component<DraggableItemProps, DraggableItemState> {
     componentDidMount() {
         this.state.pan.setValue({ x: this.props.initialX || 0, y: this.props.initialY || 0 });
         this.state.pan.addListener((value) => this._val = value);
-
-        // this.panResponder = PanResponder.create({
-        //     onStartShouldSetPanResponder: () => true,
-        //     onPanResponderGrant: () => {
-        //         this.state.pan.setOffset({
-        //             x: this._val.x,
-        //             y: this._val.y,
-        //         });
-        //         this.state.pan.setValue({ x: 0, y: 0 });
-        //     },
-        //     onPanResponderMove: Animated.event(
-        //         [null, { dx: this.state.pan.x, dy: this.state.pan.y }],
-        //         { useNativeDriver: false },
-        //     ),
-        //     onPanResponderRelease: () => {
-        //         // Logic when dropping an element (e.g. into a drop area)
-        //         this.state.pan.flattenOffset();
-        //         this.props.onDown()
-        //     }
-        // });
-
     }
 
     componentWillUnmount() {
