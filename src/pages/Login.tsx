@@ -1,15 +1,15 @@
 import { Alert, Image, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainStackParamList } from '../navigation/MainNavigator';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../store/Store';
-import { loginSuccess } from '../store/authSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../store/Store';
 import { colors } from '../styles';
 import AntIcon from 'react-native-vector-icons/AntDesign'
 import FontIcon from 'react-native-vector-icons/FontAwesome'
-import { OtpInput } from 'react-native-otp-entry';
-import { SERVER_PORT } from '../config/env';
+import UserModel from '../models/User';
+import { fetchLogin } from '../hooks/fetchUser';
+import { resetStatus } from '../store/authSlice';
 
 type LoginScreenProp = StackNavigationProp<MainStackParamList, "Login">;
 
@@ -23,33 +23,16 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
   const [password, setPassword] = useState('');
 
   const dispatch = useDispatch<AppDispatch>();
+  const status = useSelector((state: RootState) => state.auth.status);
 
   const handleLogin = async () => {
     try {
       if (email && password) {
-        const response = await fetch(`${SERVER_PORT}/user/login`,
-          {
-            method: 'POST',
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              email: email,
-              password: password,
-            })
-          });
-        const json = response.json();
-        if (response.status === 200) {
-          //Save user and token
-          json.then((data) => {
-            console.log(data)
-            navigation.navigate('Otp', { email });
-          })
+        const user: UserModel = {
+          email,
+          password,
         }
-        else {
-          Alert.alert('Login fail', 'Email or password incorrect');
-        }
+        dispatch(fetchLogin(user));
       }
       else {
         Alert.alert('Login fail', 'Do not leave information blank');
@@ -59,6 +42,12 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
     }
   };
 
+  useEffect(() => {
+    if (status === "Login done") {
+      navigation.navigate('Otp', { email });
+      dispatch(resetStatus(""));
+    }
+  }, [status]);
 
   const handleRegister = () => {
     navigation.navigate('Register');

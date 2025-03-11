@@ -1,126 +1,156 @@
-import { RouteProp } from '@react-navigation/native';
-import React, { Children, useEffect, useId, useRef, useState } from 'react';
-import { View, Text, StyleSheet, Image, SafeAreaView, Platform, StatusBar, TouchableOpacity, FlatList, ScrollView, Button, Dimensions, Alert, Modal, TextInput } from 'react-native';
+
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Alert, Modal, TextInput, UIManager, findNodeHandle } from 'react-native';
 import { MainStackParamList } from '../navigation/MainNavigator';
-import { Draggable, Footer, Header } from '../components';
+import { Draggable, Header } from '../components';
 import { Constants } from '../utils';
-import FontIcon from 'react-native-vector-icons/FontAwesome';
 import IonIcon from 'react-native-vector-icons/Ionicons';
-import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import { colors } from '../styles';
-import Slider from '@react-native-community/slider';
 import ViewShot, { CaptureOptions } from 'react-native-view-shot';
-import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
-import RNFS, { copyFile } from 'react-native-fs'
+import RNFS from 'react-native-fs'
 import { PERMISSIONS, request } from 'react-native-permissions';
 import ImageZoom from 'react-native-image-pan-zoom';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { useSelector } from 'react-redux';
-import { RootState } from '../store/Store';
-import { ColorText, FontText, OpacityText, Ratio, TextSize } from '../components/features';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../store/Store';
+import { ColorText, ComponentImage, ComponentText, Element, FontText, LogoSize, OpacityText, Ratio, TextSize } from '../components/features';
 import ToolText from '../components/features/ToolText';
 import FooterEdit from '../components/features/FooterEdit';
 import ChangeEdit from '../components/features/ChangeEdit';
 import { SERVER_PORT } from '../config/env';
+import Draw from '../components/features/Draw';
+import ComponentModel from '../models/Component';
+import ProjectModel from '../models/Project';
+import ImageEditModel from '../models/ImageEdit';
+import TextEditModel from '../models/TextEdit';
+import StrokeEditModel from '../models/StrokeEdit';
+import { addComponent, deleteComponent, updatePositionComponent, updateStyleComponent, updateValueComponent } from '../store/projectSlice';
+import { fetchRefreshToken } from '../hooks/fetchUser';
 
+type TestScreenProp = StackNavigationProp<MainStackParamList, 'Test'>;
 
-type EditScreenProp = StackNavigationProp<MainStackParamList, 'Edit'>;
-
-type EditProps = {
-  navigation: EditScreenProp;
+type TestProps = {
+  navigation: TestScreenProp;
 };
 
-const Edit: React.FC<EditProps> = ({ navigation }) => {
+const Test: React.FC<TestProps> = ({ navigation }) => {
+
+  const dataComponent = useSelector((state: RootState) => state.project.components);
+
+  const dispatch = useDispatch<AppDispatch>();
 
   const [isSaving, setIsSaving] = useState(false);
 
   const [image, setImage] = useState<string | undefined>('');
+  const [imageLogo, setImageLogo] = useState<string | undefined>('');
   const viewShotLogoRef = useRef<ViewShot>(null);
   const viewShotRef = useRef<ViewShot>(null);
-  const [imageLogo, setImageLogo] = useState<string>('');
   const [dimensions, setDimensions] = useState<{ width: number; height: number } | null>({ width: 0, height: 0 });
   const [dimensionsScaled, setDimensionsScaled] = useState<{ width: number; height: number } | null>({ width: Constants.WIDTH_DEVICE - 10, height: 700 });
-  const [components, setComponents] = useState<JSX.Element[]>([]);
+  const [components, setComponents] = useState<ComponentModel[]>(dataComponent);
 
-  const [saveChange, setSaveChange] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [isActive, setIsActive] = useState<String>('');
+
+  //Font text
   const [isFontText, setIsFontText] = useState(false);
+  const [fontText, setFontText] = useState<string>('Aria');
+
+  //Ratio image
   const [isRatio, setIsRatio] = useState(false);
   const [valueRatio, setValueRatio] = useState(0);
+
+  //Color text
   const [isColorText, setIsColorText] = useState(false);
-  const [isActive, setIsActive] = useState<String>('');
-  const [fontText, setFontText] = useState<string>('')
-  const [selectedColor, setSelectedColor] = useState<String>(colors.black)
+  const [colorText, setColorText] = useState<String>(colors.black)
+
+  //Opacity text
   const [isOpacityText, setIsOpacityText] = useState(false)
-  const [opacityValue, setOpacityValue] = useState(1);
-  const [isTextSize, setIsTextSize] = useState(false);
-  const [textSize, setTextSize] = useState(30);
+  const [opacityText, setOpacityText] = useState(1);
+
+  //Size text
+  const [isSizeTest, setIsSizeTest] = useState(false);
+  const [sizeText, setSizeText] = useState(30);
+
+  //Tool text
   const [isToolText, setIsToolText] = useState(false);
   const [toolText, setToolText] = useState<String>('');
-  const [isEditText, setIsEditText] = useState<boolean>(false);
-  const [valueText, setValueText] = useState<string>('Logo');
 
-  const [widthLogo, setWidthLogo] = useState(100);
-  const [heightLogo, setHeightLogo] = useState(100);
+  //Edit text
+  const [isEditText, setIsEditText] = useState<boolean>(false);
+  const [valueText, setValueText] = useState<string>('Text');
+
+  //Element
+  const [isElement, setIsElement] = useState<boolean>(false);
+
 
   //Edit Text Logo
-  const [itemIsEdit, setItemIsEdit] = useState('');
   const [componentStyles, setComponentStyles] = useState<{ [key: string]: any }>({});
   const [isItemFocus, setIsItemFocus] = useState<string | null>('');
 
+  //Edit Image Logo
+  const [isZoomImage, setIsZoomImage] = useState(false);
+  const [dimensionsLogo, setDimensionsLogo] = useState<{ width: number; height: number }>({ width: 100, height: 100 });
+  const [zoomValue, setZoomValue] = useState<number>(100);
+  const [positionValue, setPositionValue] = useState<{ x: number, y: number }>({ x: 0, y: 0 });
+
+  //Get and Refesh Token
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
   const refreshToken = useSelector((state: RootState) => state.auth.refreshToken);
+
+  //Get Offset of draw
+  const [isDraw, setIsDraw] = useState(false);
+  const [offsetY, setOffsetY] = useState(0);
+  const containerRef = useRef(null);
+  const [sizeDraw, setSizeDraw] = useState<{ width: number; height: number }>({ width: 100, height: 100 });
+
+  //List components
+  const [listComponent, setListComponent] = useState<ComponentModel[]>([]);
+  const componentRef = useRef(null);
+
+  //Type component focus
+  const [typeComponent, setTypeComponent] = useState('');
+
+  //Style stroke
+  const [widthStroke, setWidthStroke] = useState<number>(3);
+  const [coloStroke, setColorStroke] = useState(colors.black);
+
+  useEffect(() => {
+    setComponents(dataComponent); // Async data with Redux
+  }, [dataComponent]);
+
 
   const options: CaptureOptions = {
     format: 'png',
     quality: 0.9
   }
 
-  const getRefreshToken = async () => {
-    const response = await fetch(`${SERVER_PORT}/user/refresh-token`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(
-        { accessToken }
-      )
-    });
-
-    const json = response.json();
-
-    if (response.status === 200) {
-      //Save user and token
-      json.then((data) => {
-        console.log(data);
-      })
-    }
-  }
-
   //get refresh token
   useEffect(() => {
-
-    // setInterval(getRefreshToken, 5000);
-
+    if (isAuthenticated) {
+      setInterval(() => {
+        dispatch(fetchRefreshToken(refreshToken ? refreshToken : ''));
+      }, 5000);
+    }
   }, [])
 
 
   //Get width, height image
   useEffect(() => {
 
-    if (!image) return
+    if (image == '') return
 
     if (image) {
       Image.getSize(image, (width, height) => {
-        if (width > Constants.WIDTH_DEVICE || height > Constants.HEIGHT_DEVICE) {
-          console.log('set 1')
-          setDimensions({ width: Constants.WIDTH_DEVICE - 10, height: 700 })
+        if (height < 700 || height > 700) {
+          setDimensions({ width: Constants.WIDTH_DEVICE - 10, height: height });
+        }
+        else if (width < Constants.WIDTH_DEVICE - 10 || width > Constants.WIDTH_DEVICE - 10) {
+          setDimensions({ width: width, height: height });
         }
         else {
-          // setDimensions({ width: width /1.1, height: height /1.1});
-          console.log('set 2')
-          setDimensions({ width: width, height: height });
+          setDimensions({ width: Constants.WIDTH_DEVICE - 10, height: 700 });
         }
       }, (error) => {
         console.error('Failed to get image size:', error);
@@ -128,53 +158,67 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
     }
 
     return () => {
-      console.log("Không có ảnh để lấy kích thước")
+      console.log("No image get dimension ");
     }
 
   }, [image]);
 
   const resetText = () => {
-    setFontText('');
-    setTextSize(30);
-    setSelectedColor(colors.black);
-    setOpacityValue(1)
+    setValueText('Text')
+    setFontText('Aria');
+    setSizeText(30);
+    setColorText(colors.black);
+    setOpacityText(1)
   }
 
-  const falseToolText = () => {
-    setIsColorText(false);
+  const cancelToolText = () => {
     setIsFontText(false);
-    setIsOpacityText(false);
-    setIsTextSize(false);
+    setIsColorText(false);
     setIsEditText(false);
-    setIsItemFocus('');
+    setIsSizeTest(false);
+    setIsOpacityText(false);
+  }
+
+  const cancelTool = () => {
+    setIsSaving(false);
+    setIsToolText(false);
+    setIsRatio(false);
+    setIsElement(false);
+    setIsDraw(false);
+    setIsActive('');
   }
 
   const handleActiveTool = (edit: String) => {
     try {
+      cancelTool();
+      cancelToolText();
+      cancelOptionText();
+      cancelOptionImage();
       if (isActive == '' || isActive != edit) {
         setIsActive(edit);
-        falseToolText()
         switch (edit) {
           case 'Text': {
-            console.log(isToolText)
-            setIsRatio(false);
             if (isToolText) {
               setIsToolText(false)
             } else {
-              setIsToolText(true);
               setIsEditText(true);
-              setSaveChange(true)
-              setIsActive('')
+              setIsActive('');
             }
           };
             break;
           case 'Ratio': {
-            console.log("ratio")
             setIsRatio(true);
           }
             break;
+          case 'Element': {
+            setIsElement(true);
+          }
+            break;
+          case 'Draw': {
+            setIsDraw(true)
+          }
+            break;
           default:
-            console.log('Eror: Không có tool');
             break;
         }
       }
@@ -182,6 +226,8 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
         setIsActive('');
         setIsToolText(false);
         setIsRatio(false)
+        setIsElement(false);
+        setIsDraw(false);
       }
     } catch (error) {
       console.log("Error handle active tool: " + error);
@@ -190,24 +236,27 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
 
   const handleActiveToolText = (tool: String) => {
     try {
+      if (toolText == tool) {
+        setToolText('');
+        cancelToolText();
+        return;
+      }
       if (toolText == '' || toolText != tool) {
+        cancelToolText();
         setToolText(tool);
-        falseToolText();
         switch (tool) {
+          case 'download': { captureLogo() } break;
           case 'font': { setIsFontText(true) } break;
           case 'color': { setIsColorText(true) } break;
-          case 'size': { setIsTextSize(true) } break;
-          case 'opacity': { setIsOpacityText(true) } break;
           case 'edit': { setIsEditText(true); } break;
-          case 'download': { captureLogo() } break;
+          case 'size': { setIsSizeTest(true) } break;
+          case 'opacity': { setIsOpacityText(true) } break;
           default:
-            console.log("đang cập nhật")
             break;
         }
       }
       else {
-        setToolText('');
-        falseToolText()
+        return new Error('Tool test is fail')
       }
     } catch (error) {
       console.log("Error handle active tool text: " + error);
@@ -216,33 +265,38 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
 
 
   const captureLogo = () => {
-    setItemIsEdit('');
+    setIsItemFocus('');
     if (viewShotLogoRef.current) {
-      viewShotLogoRef.current.capture().then((uri: string) => {
-        console.log('Image saved to', uri);
-        saveImage(uri);
-      }).catch((error: Error) => {
-        console.error('Capture failed', error);
-      });
+      if (viewShotLogoRef.current.capture) {
+        viewShotLogoRef.current.capture().then((uri: string) => {
+          console.log('Image saved to', uri);
+          saveImage(uri);
+        }).catch((error: Error) => {
+          console.error('Capture failed', error);
+        });
+      }
     } else {
       console.error('viewShotRef is null or undefined');
     }
   };
 
   const captureImageWithWatermark = () => {
-    setItemIsEdit('');
-    falseToolText();
+    setIsItemFocus('');
+    cancelToolText();
+    cancelOptionText();
     if (!image) {
       Alert.alert('No Image', 'Please add image and edit to save images.');
     }
     else {
       if (viewShotRef.current) {
-        viewShotRef.current.capture().then((uri: string) => {
-          console.log('Image saved to', uri);
-          saveImage(uri);
-        }).catch((error: Error) => {
-          console.error('Capture failed', error);
-        });
+        if (viewShotRef.current.capture) {
+          viewShotRef.current.capture().then((uri: string) => {
+            console.log('Image saved to', uri);
+            saveImage(uri);
+          }).catch((error: Error) => {
+            console.error('Capture failed', error);
+          });
+        }
       } else {
         console.error('viewShotRef is null or undefined');
       }
@@ -273,120 +327,262 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
     }
   }
 
-  
+
 
   const editTextValue = () => {
     setIsEditText(false);
-    const item = components.find(item => {
-      return item.key == itemIsEdit;
-    });
-    console.log(item);
-    if (item != undefined) {
-      editComponentText()
+    const item = components.find(item => item.id == isItemFocus);
+    if (item || item != undefined) {
+      editComponentText();
     } else {
-      addComponentText();
+      addComponentText(valueText);
     }
   }
 
   // Edit logo text 
   const editComponentText = () => {
-    setComponents(prevComponents =>
-      prevComponents.map(component =>
-        component.key === itemIsEdit
-          ? { ...component, props: { ...component.props, children: valueText } }
-          : component
-      )
-    );
+    dispatch(updateValueComponent({
+      id: isItemFocus,
+      value: valueText
+    }))
+  };
+
+  const zoomLogo = (value: number) => {
+    setDimensionsLogo({
+      width: value,
+      height: value,
+    })
+    editImageStyle();
+  };
+
+  const addComponentStroke = (path: string) => {
+    const key = Date.now().toString();
+    const originPath: StrokeEditModel = {
+      path: path
+    }
+
+    const originStyle = {
+      width: widthStroke,
+      color: coloStroke,
+    }
+
+    setIsItemFocus(key);
+
+    dispatch(addComponent(
+      {
+        id: key,
+        type: 'Stroke',
+        component: originPath,
+        style: originStyle
+      }
+    ))
   };
 
   const addComponentLogo = (uri: string | undefined) => {
     const key = Date.now().toString();
-    setItemIsEdit(key);
-    setComponents([...components, {
-      key: key,
-      type: 'Image',
-      props: {
-        style: [
-          { width: 100, height: 100, },
-          { width: widthLogo, height: heightLogo }
-        ],
-        children: uri
+    const originLogo: ImageEditModel = {
+      uri: uri ? uri : '',
+      positionX: 0,
+      positionY: 0,
+    }
+    const originStyle = {
+      width: 100,
+      height: 100,
+    }
+    dispatch(addComponent(
+      {
+        id: key,
+        type: 'Image',
+        component: originLogo,
+        style: originStyle,
       }
-    }]);
-    setComponentStyles(prevStyles => ({
-      ...prevStyles,
-      [key]: { width: 100, height: 100, }
-    }));
+    ))
   }
 
+  const editImageStyle = () => {
+    const newStyle = {
+      width: dimensionsLogo.width,
+      height: dimensionsLogo.height,
+    }
 
+    dispatch(updateStyleComponent({ id: isItemFocus, style: newStyle }));
+  };
 
-  const addComponentText = () => {
+  const addComponentText = (value: string | undefined) => {
     const key = Date.now().toString();
-    setItemIsEdit(key);
-    setComponents([...components, {
-      key: key,
-      type: 'Text',
-      props: {
-        style: [
-          { fontSize: 30, color: colors.black },
-          { fontFamily: fontText, color: selectedColor, opacity: opacityValue } // Use current fontText
-        ],
-        children: valueText
+    const originText: TextEditModel = {
+      value: value ? value : '',
+      positionX: 0,
+      positionY: 0,
+    };
+    const originStyle = {
+      fontFamily: 'Aria',
+      fontSize: 30,
+      color: colors.black,
+      opacity: 1,
+    };
+    dispatch(addComponent(
+      {
+        id: key,
+        type: 'Text',
+        component: originText,
+        style: originStyle
       }
-    }]);
-    setComponentStyles(prevStyles => ({
-      ...prevStyles,
-      [key]: { fontSize: 30, color: colors.black, opacity: 1 }
-    }));
+    ));
+    cancelOptionText();
+    cancelToolText();
+    cancelOptionEdit();
   };
 
+  const editTextStyle = () => {
+    const newStyle = {
+      fontFamily: fontText,
+      fontSize: sizeText,
+      color: colorText,
+      opacity: opacityText,
+    }
 
-  const removeComponent = (key: string | null) => {
-    setComponents(components.filter(component => {
-      console.log('Comparing', component.key, 'with', key);
-      return component.key !== key;
-    }));
+    dispatch(updateStyleComponent({
+      id: isItemFocus,
+      style: newStyle
+    }))
   };
 
-  const editTextStyle = (key: string) => {
-    setItemIsEdit(key);
-    updateComponentStyle(key, { fontFamily: fontText, color: selectedColor, opacity: opacityValue });
-  };
+  const editPositionComponent = (key: string, x: number, y: number) => {
+    setIsItemFocus(key);
 
-  const updateComponentStyle = (key: string, newStyle: any) => {
-    setComponentStyles(prevStyles => ({
-      ...prevStyles,
-      [key]: {
-        ...prevStyles[key],
-        ...newStyle,
-      }
-    }));
-  };
-
-  const handleNoSaveChange = () => {
-    setSaveChange(false);
-    setIsToolText(false);
-    setIsEditText(false)
-    itemIsEdit ? removeComponent(itemIsEdit) : null;
-    resetText();
-    setIsRatio(false);
-    setIsActive('')
+    dispatch(updatePositionComponent({
+      id: isItemFocus, x, y
+    }))
   }
 
-  const handleSaveChange = () => {
-    setSaveChange(false);
-    setIsToolText(false);
-    editTextStyle(itemIsEdit);
-    setItemIsEdit('');
-    falseToolText();
-    setIsRatio(false);
-    setIsActive('')
-  }
+  const removeComponent = (key: string) => {
+    if (!key) { return };
+
+    dispatch(deleteComponent({ id: key }));
+  };
 
   const handleProfile = () => {
     isAuthenticated ?
       navigation.navigate("Profile") : navigation.navigate("Login")
+  };
+
+  const unFocusItem = () => {
+    setIsItemFocus('');
+    cancelOptionEdit();
+    cancelOptionImage();
+    cancelOptionText();
+    cancelTool();
+    cancelToolText();
+  }
+
+  const selectedItem = (id: string) => {
+    if (!id) {
+      return;
+    }
+    if (id == isItemFocus) {
+      return;
+    }
+    setIsItemFocus(id);
+    const item = components.find(item => {
+      if (item.id == id) {
+        return item.style
+      }
+    });
+    if (!item) {
+      return;
+    }
+    setTypeComponent(item.type);
+    item.type == 'Text' ? selectedItemText(item.style) : selectedItemImage(item.style);
+  }
+
+  const selectedItemText = (item: any) => {
+
+    //Cancel option image
+    cancelOptionImage();
+
+    setIsEdit(true); //Open save or cancel change
+
+    //Get style form component
+    setFontText(item?.fontFamily); //Get font text
+    setColorText(item?.color); //Get color text
+    setSizeText(item?.fontSize); //Get font size text
+    setOpacityText(item?.opacity); //Get opacity text
+
+    //Visilbe tool text
+    setIsToolText(true);
+  };
+
+  const selectedItemImage = (item: any) => {
+    //Cancel option text
+    cancelOptionText();
+
+    //Open save or cancel change
+    setIsEdit(true);
+
+    //Get style from component
+    setDimensionsLogo({ width: item?.width, height: item?.height }); //Get wight, height image
+
+    const zoom = item?.width;
+    setZoomValue(zoom);
+
+    //Visible tool zoom image
+    setIsZoomImage(true);
+  };
+
+  const saveProject = () => {
+    const key = Date.now().toString();
+    const project: ProjectModel = {
+      id: key,
+      name: 'Project',
+      image: image ? image : '',
+      style: {
+        height: sizeDraw.height,
+        width: sizeDraw.width,
+      },
+      component: listComponent,
+    };
+  }
+
+  const handleNoSaveChange = () => {
+    //Cancel option edit text
+    cancelOptionEdit();
+
+    resetText();
+  }
+
+  const handleSaveChange = () => {
+
+    if (!isItemFocus) {
+      return;
+    }
+
+    //Save style change
+    typeComponent == 'Text' ? editTextStyle() : editImageStyle();
+
+    //Cancel option edit text
+    cancelOptionEdit();
+  }
+
+  const cancelOptionEdit = () => {
+    setIsEdit(false); //Hiden save or cancel change
+    setIsItemFocus(''); //Delete item focus 
+
+    //Cacel of text
+    cancelOptionText();
+
+    //Cancel of image
+    cancelOptionImage();
+  }
+
+  const cancelOptionText = () => {
+    setIsToolText(false); //Hiden tool text
+    cancelToolText(); //Cancel all tool text
+  };
+
+  const cancelOptionImage = () => {
+    setIsZoomImage(false);
+    setDimensionsLogo({ width: 100, height: 100 });
   };
 
   const undo = () => { };
@@ -405,7 +601,11 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
         shareImage={shareImage}
         profile={handleProfile}
       />
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+
+      <View
+        style={{
+          flex: 1, justifyContent: 'center', alignItems: 'center',
+        }}>
         <ViewShot ref={viewShotRef} style={[styles.boxImage, { width: dimensions?.width, height: dimensions?.height }]} options={options} >
           {
             image ?
@@ -414,89 +614,86 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
                 cropHeight={dimensionsScaled?.height}
                 imageWidth={dimensions?.width}
                 imageHeight={dimensions?.height}
-                enableDoubleClickZoom={false}>
-                <View style={{
-                  justifyContent: 'center', alignItems: 'center',
-                }}>
+                enableDoubleClickZoom={false}
+              >
+                <View
+                  ref={containerRef}
+                  style={{
+                    justifyContent: 'center', alignItems: 'center',
+                  }}
+                  onLayout={(event) => {
+                    if (containerRef.current) {
+                      UIManager.measure(findNodeHandle(containerRef.current), (x, y, w, h, pageX, pageY) => {
+                        setOffsetY(pageY);
+                      });
+                    }
+                  }}
+                >
+
+                  <Draw
+                    clearDraw={() => { }}
+                    isDraw={isDraw}
+                    offerY={offsetY}
+                    width={sizeDraw.width}
+                    height={sizeDraw.height}
+                    addStroke={(stroke) => { addComponentStroke(stroke) }}
+                    component={components.filter(item => item.type == 'Stroke')}
+                  />
+
                   {components.map((component) => {
                     if (component.type === 'Text') {
                       return (
-                        <Draggable
+                        <ComponentText
+                          component={component}
                           onDown={() => {
-                            setIsItemFocus(component.key);
-                            // setIsToolText(true);
-                            // setSaveChange(true);
+                            selectedItem(component.id);
+                            console.log(component)
                           }}
-                          key={component.key}>
-                          <View style={{ marginBottom: 10, borderWidth: component.key == isItemFocus ? 1 : 0, zIndex: 1 }}>
-                            {
-                              component.key == isItemFocus ?
-                                <TouchableOpacity style={styles.btnDeleteLogo}
-                                  onPress={() => { removeComponent(component.key); falseToolText() }}>
-                                  <IonIcon name="close-outline" size={24} color={colors.black} />
-                                </TouchableOpacity>
-                                : null
-                            }
-                            {
-                              component.key == isItemFocus ?
-                                <TouchableOpacity style={styles.btnHideFocus}
-                                  onPress={() => setIsItemFocus('')}>
-                                  <IonIcon name="eye-off" size={20} color={colors.black} />
-                                </TouchableOpacity>
-                                : null
-                            }
-                            <ViewShot ref={viewShotLogoRef} options={options} >
-                              <Text style={[
-                                componentStyles[component.key],
-                                component.key === itemIsEdit ? {
-                                  fontFamily: fontText,
-                                  color: selectedColor,
-                                  opacity: opacityValue,
-                                } : {},]}
-                              >
-                                {component.props.children}
-                              </Text>
-                            </ViewShot>
-                          </View>
-                        </Draggable>
+                          newPosition={(x: number, y: number) => {
+                            (component.id, x, y)
+                          }}
+                          onRemove={() => { removeComponent(component.id) }}
+                          itemFocus={isItemFocus ? isItemFocus : ''}
+                          unItemFocus={unFocusItem}
+                          styleEdit={{
+                            fontFamily: fontText,
+                            fontSize: sizeText,
+                            color: colorText,
+                            opacity: opacityText,
+                          }}
+                          key={component.id}
+                        />
                       );
                     }
-                    else {
+                    else if (component.type === 'Image') {
                       return (
-                        <Draggable
-                          onDown={() => { setIsItemFocus(component.key) }}
-                          key={component.key}>
-                          <View style={{ marginBottom: 10, borderWidth: component.key == isItemFocus ? 1 : 0, }}>
-                            {
-                              component.key == isItemFocus ?
-                                <TouchableOpacity style={styles.btnDeleteLogo}
-                                  onPress={() => removeComponent(component.key)}>
-                                  <IonIcon name="close-outline" size={24} color={colors.black} />
-                                </TouchableOpacity>
-                                : null
-                            }
-                            {
-                              component.key == isItemFocus ?
-                                <TouchableOpacity style={styles.btnHideFocus}
-                                  onPress={() => setIsItemFocus('')}>
-                                  <IonIcon name="eye-off" size={20} color={colors.black} />
-                                </TouchableOpacity>
-                                : null
-                            }
-                            <Image source={{ uri: component.props.children }}
-                              style={[
-                                componentStyles[component.key],
-                                component.key === itemIsEdit ? {
-                                  width: widthLogo,
-                                  height: heightLogo
-                                } : {},]}
-                            />
-                          </View>
-                        </Draggable>
+                        <ComponentImage
+                          key={component.id}
+                          onDown={() => {
+                            selectedItem(component.id);
+                            console.log(component);
+                          }}
+                          onRemove={() => { removeComponent(component.id) }}
+                          component={component}
+                          newPosition={(x: number, y: number) => {
+                            editPositionComponent(component.id, x, y)
+                          }}
+                          itemFocus={isItemFocus ? isItemFocus : ''}
+                          unItemFocus={unFocusItem}
+                          styleEdit={{
+                            width: dimensionsLogo.width,
+                            height: dimensionsLogo.height,
+                          }}
+                        />
                       );
                     }
-                  })}
+                  }
+                  )}
                   <Image source={{ uri: image }}
+                    onLayout={(event) => {
+                      const { x, y, height, width } = event.nativeEvent.layout;
+                      setSizeDraw({ width: width, height: height });
+                    }}
                     style={[{
                       width: valueRatio > 0 ? '100%' : dimensions?.width,
                       height: valueRatio > 0 ? null : dimensions?.height,
@@ -525,21 +722,38 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
               <TouchableOpacity style={[styles.btnEditText]} onPress={handleNoSaveChange}>
                 <IonIcon name="close-outline" size={30} color={colors.black} />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.btnEditText} onPress={editTextValue}>
+              <TouchableOpacity style={styles.btnEditText} onPress={() => { editTextValue() }}>
                 <IonIcon name="checkmark" size={30} color={colors.black} />
               </TouchableOpacity>
             </View>
           </View>
         </Modal>
-
         {
-          isTextSize && isToolText ?
+          isZoomImage ?
+            <LogoSize
+              value={zoomValue}
+              maxValue={dimensions?.width ? dimensions.width : 100}
+              minValue={100}
+              step={20}
+              onChangeValue={(value) => zoomLogo(value)}
+            /> : null
+        }
+        {
+          isElement ?
+            <Element onPress={(uri: any) => {
+              addComponentLogo(uri);
+              setIsElement(false);
+            }}
+            /> : null
+        }
+        {
+          isSizeTest && isToolText ?
             <TextSize
-              value={textSize}
+              value={sizeText}
               maxValue={50}
               minValue={16}
               step={2}
-              onChangeValue={(value: number) => setTextSize(value)}
+              onChangeValue={(value: number) => setSizeText(value)}
             />
             : null
         }
@@ -548,9 +762,9 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
             <OpacityText
               maxValue={1}
               minValue={0}
-              value={opacityValue}
+              value={opacityText}
               step={0.1}
-              onChangeValue={(value: number) => setOpacityValue(value)}
+              onChangeValue={(value: number) => { setOpacityText(value) }}
             />
             : null
         }
@@ -562,14 +776,14 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
             : null
         }
         {
-          isColorText && isToolText ?
+          isColorText ?
             <ColorText
-              onChangeValue={(value: string) => setSelectedColor(value)}
+              onChangeValue={(value: string) => setColorText(value)}
             />
             : null
         }
         {
-          isFontText && isToolText ?
+          isFontText ?
             <FontText
               onChangeValue={(value: string) => setFontText(value)}
             />
@@ -583,17 +797,18 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
             : null
         }
         {
-          saveChange == false ?
-            <FooterEdit 
-            image={image}
-            uriImage={(value : string) => setImage(value)}
-            uriLogo={(value : string) => addComponentLogo(value)}
-            handleActiveTool={(value:string) =>handleActiveTool(value)}
+          !isEdit ?
+            <FooterEdit
+              image={image}
+              imageLogo={imageLogo}
+              uriImage={(value: string) => setImage(value)}
+              uriLogo={(value: string) => { addComponentLogo(value) }}
+              handleActiveTool={(value: string) => handleActiveTool(value)}
             />
             :
             <ChangeEdit
-            onPressNo={handleNoSaveChange}
-            onPressSave={handleSaveChange}
+              onPressNo={handleNoSaveChange}
+              onPressSave={handleSaveChange}
             />
         }
       </View>
@@ -682,4 +897,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Edit;
+export default Test;

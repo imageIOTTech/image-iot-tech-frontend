@@ -1,12 +1,14 @@
 import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { MainStackParamList } from '../navigation/MainNavigator'
 import Font5Icon from 'react-native-vector-icons/FontAwesome5'
 import { colors } from '../styles'
-import { useDispatch } from 'react-redux'
-import { AppDispatch } from '../store/Store'
-import { SERVER_PORT } from '../config/env'
+import { useDispatch, useSelector } from 'react-redux'
+import { AppDispatch, RootState } from '../store/Store'
+import UserModel from '../models/User'
+import { fetchRegister } from '../hooks/fetchUser'
+import { resetStatus } from '../store/authSlice'
 
 type RegisterScreenProp = StackNavigationProp<MainStackParamList, 'Register'>;
 
@@ -23,10 +25,19 @@ const Register: React.FC<RegisterProps> = ({ navigation }) => {
     const [name, setName] = useState('');
 
     const dispatch = useDispatch<AppDispatch>();
+    const status = useSelector((state: RootState) => state.auth.status);
 
     const handleLogin = () => {
         navigation.navigate('Login')
     };
+
+    useEffect(() => {
+        if (status === "Register done") {
+            Alert.alert('Register successful', 'Register successful, Please login again')
+            navigation.navigate('Login');
+            dispatch(resetStatus(""));
+        }
+    }, [status]);
 
     const handleSignUp = async () => {
         try {
@@ -37,29 +48,13 @@ const Register: React.FC<RegisterProps> = ({ navigation }) => {
                 Alert.alert('Do not leave information blank');
             }
             else {
-                const response = await fetch(`${SERVER_PORT}/user/register`,
-                    {
-                        method: 'POST',
-                        headers: {
-                            Accept: 'application/json',
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            name,
-                            email,
-                            password,
-                            phonenumber,
-                        })
-                    });
-                if (response.status === 201) {
-                    const json = response.json();
-                    Alert.alert('SingUp Success', 'Please login again');
-                    navigation.navigate('Login');
-                }
-                else {
-                    Alert.alert('Register fail', 'Please register your account again');
-                }
-
+                const user: UserModel = {
+                    name,
+                    email,
+                    password,
+                    phonenumber,
+                };
+                dispatch(fetchRegister(user));
             }
         } catch (error) {
             console.log('Error: ' + error)

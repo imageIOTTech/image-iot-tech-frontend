@@ -15,15 +15,11 @@ const ChangeEdit: React.FC<ChangeEditProps> = (props) => {
     return (
         <View style={[styles.boxFooterEdit, { padding: 5 }]}>
             <TouchableOpacity style={[styles.boxSaveChange,]}
-                onPress={() => {
-                    onPressNo
-                }}>
+                onPress={onPressNo}>
                 <IonIcon name="close-outline" size={30} color={colors.black} />
             </TouchableOpacity>
             <TouchableOpacity style={[styles.boxSaveChange,]}
-                onPress={() => {
-                    onPressSave
-                }}>
+                onPress={onPressSave}>
                 <IonIcon name="checkmark" size={30} color={colors.black} />
             </TouchableOpacity>
         </View>

@@ -21,7 +21,7 @@ type FolderProps = {
 const Folder: React.FC<FolderProps> = ({ navigation }) => {
 
 
-    const user = useSelector((state: RootState) => state.auth.id);
+    const user = useSelector((state: RootState) => state.auth.user);
 
     const [nameFolder, setNameFolder] = useState('');
     const [dataFolder, setDataFolder] = useState(DataFolder);
@@ -35,7 +35,6 @@ const Folder: React.FC<FolderProps> = ({ navigation }) => {
         if (parentFolder == 0) {
             const backAction = () => {
             setPasrentFolder(0);
-            console.log('Back')
             return true; // Block back action
           };
 
@@ -68,7 +67,6 @@ const Folder: React.FC<FolderProps> = ({ navigation }) => {
 
     const handleRenameFolder = () => {
         const folder = dataFolder.filter((folder) => folder.id === folderIsSelected.id);
-        console.log(folder);
     };
 
     const deleteFolder = () => {

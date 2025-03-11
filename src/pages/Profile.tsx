@@ -16,35 +16,11 @@ type ProfileProps = {
   navigation: ProfileScreenProps;
 };
 
-type DataImageType = {
-  id: number;
-  uri: any;
-}
-
-const dataImages: DataImageType[] = [
-  {
-    id: 1,
-    uri: require('../assets/imgs/a.jpg'),
-  },
-  {
-    id: 2,
-    uri: require('../assets/imgs/a.jpg'),
-  },
-  {
-    id: 3,
-    uri: require('../assets/imgs/a.jpg'),
-  },
-  {
-    id: 4,
-    uri: require('../assets/imgs/a.jpg'),
-  }
-]
-
 const Profile: React.FC<ProfileProps> = ({ navigation }) => {
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const name = useSelector((state: RootState) => state.auth.name);
+  const user = useSelector((state: RootState) => state.auth.user);
 
   const hanleEditScreen = () => {
     navigation.navigate("Edit");
@@ -75,7 +51,7 @@ const Profile: React.FC<ProfileProps> = ({ navigation }) => {
         <TouchableOpacity style = {styles.btnAvatar}>
           <Image source={require('../assets/imgs/a.jpg')} style={styles.imgAvatar} />
         </TouchableOpacity>
-        <Text style={styles.textUsername}>{name}</Text>
+        <Text style={styles.textUsername}>{user.name}</Text>
       </View>
       <View style={styles.boxTool}>
         <TouchableOpacity style={styles.btnTool}>

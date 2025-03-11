@@ -2,6 +2,7 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 import React from 'react'
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons'
 import IonIcon from 'react-native-vector-icons/Ionicons'
+import FontIcon from 'react-native-vector-icons/FontAwesome'
 import { colors } from '../../styles'
 
 type ToolTextProps = {
@@ -30,6 +31,9 @@ const ToolText: React.FC<ToolTextProps> = (props) => {
                 <TouchableOpacity style={styles.boxToolTextItem} onPress={() => { handleOnPress('edit') }}>
                     <MaterialIcon name="edit" size={30} color={colors.gray} />
                 </TouchableOpacity>
+                <TouchableOpacity style={styles.boxToolTextItem} onPress={() => { handleOnPress('size') }}>
+                    <FontIcon name="text-height" size={30} color={colors.gray} />
+                </TouchableOpacity>
                 <TouchableOpacity style={styles.boxToolTextItem} onPress={() => { handleOnPress('opacity') }}>
                     <MaterialIcon name='opacity' size={30} color={colors.gray} />
                 </TouchableOpacity>
@@ -44,7 +48,7 @@ const styles = StyleSheet.create({
     boxToolText: {
         position: 'absolute',
         top: 0,
-        marginTop: -65,
+        marginTop: -66,
         height: 65,
         backgroundColor: colors.white,
     },

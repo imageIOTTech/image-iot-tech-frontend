@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Button, StyleSheet, FlatList, Pressable, Image } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MainStackParamList } from '../navigation/MainNavigator';
-import { useNavigation } from '@react-navigation/native';
 import { DataFolder, DataImage } from '../utils/data';
 import { colors } from '../styles';
 import { useSelector } from 'react-redux';
@@ -28,12 +27,12 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
   const [parentFolder, setPasrentFolder] = useState(0);
   const [dataFolder, setDataFolder] = useState(DataFolder);
 
-  const user = useSelector((state: RootState) => state.auth.name);
+  const user = useSelector((state: RootState) => state.auth.user);
 
   const renderItemRecent = ({ item }: { item: ImageRecent }) => {
     return (
       <Pressable style={styles.boxItemImage}>
-        <Image source={item.uri} style={styles.imgItem} />
+        <Image source={{uri :item.uri}} style={styles.imgItem} />
       </Pressable>
     )
   };
@@ -69,7 +68,7 @@ const Home: React.FC<HomeProps> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.boxHeader}>
-        <Text style={styles.txtWellcome}>Hello, {user}</Text>
+        <Text style={styles.txtWellcome}>Hello, {user.name}</Text>
         <Text style={styles.txtWellcome}>How are you today ??</Text>
       </View>
       <View style={styles.boxRecent}>

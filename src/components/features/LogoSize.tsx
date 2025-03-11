@@ -1,26 +1,26 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import FontIcon from 'react-native-vector-icons/FontAwesome'
-import Slider from '@react-native-community/slider'
 import { colors } from '../../styles'
+import Slider from '@react-native-community/slider'
+import FontIcon from 'react-native-vector-icons/FontAwesome'
 
-type TextSizeProps = {
-    value: number,
-    maxValue: number,
+type LogoSizeProps = {
     minValue: number,
+    maxValue: number,
     step: number,
+    value: number,
     onChangeValue: (value: number) => void,
 }
 
-const TextSize: React.FC<TextSizeProps> = (props) => {
+const LogoSize: React.FC<LogoSizeProps> = (props) => {
 
-    const {value, maxValue, minValue, step, onChangeValue} = props;
+    const {maxValue, minValue, value, step, onChangeValue} = props;
 
-    return (
-        <View style={styles.boxTextSize}>
+  return (
+    <View style={styles.boxLogoSize}>
             <FontIcon name='text-height' size={30} color={colors.gray} />
             <Slider
-                style={styles.sliderTextSize}
+                style={styles.sliderLogoSize}
                 minimumValue={minValue}
                 maximumValue={maxValue}
                 step={step}
@@ -31,16 +31,16 @@ const TextSize: React.FC<TextSizeProps> = (props) => {
                 thumbTintColor={colors.gray}
             />
         </View>
-    )
+  )
 }
 
-export default TextSize
+export default LogoSize
 
 const styles = StyleSheet.create({
-    boxTextSize: {
+    boxLogoSize: {
         position: 'absolute',
         top: 0,
-        marginTop: -130,
+        marginTop: -75,
         width: '100%',
         height: 75,
         flexDirection: 'row',
@@ -49,8 +49,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 20,
       },
-      sliderTextSize: {
+      sliderLogoSize: {
         width: '90%'
       },
-
 })

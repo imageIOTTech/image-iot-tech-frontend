@@ -1,9 +1,17 @@
-import TextSize from "./TextSize";
+import ChangeEdit from "./ChangeEdit";
+import ColorText from "./ColorText";
+import Draw from "./Draw";
+import Element from "./Element";
+import FontText from "./FontText";
+import FooterEdit from "./FooterEdit";
+import LogoSize from "./LogoSize";
 import OpacityText from "./OpacityText";
 import Ratio from "./Ratio";
-import FontText from "./FontText";
-import ColorText from "./ColorText";
+import TextSize from "./TextSize";
+import ToolText from "./ToolText";
 
-import LogoSize from "./LogoSize";
-
-export { TextSize, OpacityText, Ratio, FontText, ColorText, LogoSize}
+export { 
+    TextSize, OpacityText, Ratio, FontText, 
+    ColorText, LogoSize, Element, ChangeEdit,
+    Draw, FooterEdit, ToolText
+}
