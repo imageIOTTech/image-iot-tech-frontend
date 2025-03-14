@@ -23,7 +23,6 @@
     "react-native": "0.72.4",
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "2.18.x",
-    "react-native-image-crop-picker": "^0.25.0",
     "react-native-image-pan-zoom": "^2.1.12",
     "react-native-image-picker": "^7.1.2",
     "react-native-otp-entry": "^1.8.2",

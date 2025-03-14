@@ -13,10 +13,11 @@ import ImageZoom from 'react-native-image-pan-zoom';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store/Store';
-import { ColorText, CropImage, Element, FontText, LogoSize, OpacityText, Ratio, TextSize } from '../components/features';
+import { ColorText, Element, FontText, LogoSize, OpacityText, Ratio, TextSize } from '../components/features';
 import ToolText from '../components/features/ToolText';
 import FooterEdit from '../components/features/FooterEdit';
 import ChangeEdit from '../components/features/ChangeEdit';
+import { SERVER_PORT } from '../config/env';
 import Draw from '../components/features/Draw';
 import ComponentModel from '../models/Component';
 import ProjectModel from '../models/Project';
@@ -82,8 +83,6 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
   //Element
   const [isElement, setIsElement] = useState<boolean>(false);
 
-  //Crop Image
-  const [isCropImage, setIsCropImage] = useState<boolean>(false);
 
   //Edit Text Logo
   const [isItemFocus, setIsItemFocus] = useState<string | null>('');
@@ -135,21 +134,30 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
 
   //Get width, height image
   useEffect(() => {
-    if (dimensions) {
-      if (dimensions.width != Constants.WIDTH_DEVICE - 10) {
-        if (dimensions.width == dimensions.height) {
-          setDimensions({ width: Constants.WIDTH_DEVICE - 10, height: Constants.WIDTH_DEVICE - 10 });
-          return;
+
+    if (image == '') return
+
+    if (image) {
+      Image.getSize(image, (width, height) => {
+        if (height < 700 || height > 700) {
+          setDimensions({ width: Constants.WIDTH_DEVICE - 10, height: height });
         }
-        if (dimensions.height != 700) {
-          setDimensions({ width: Constants.WIDTH_DEVICE - 10, height: 700 });
+        else if (width < Constants.WIDTH_DEVICE - 10 || width > Constants.WIDTH_DEVICE - 10) {
+          setDimensions({ width: width, height: height });
         }
         else {
-          setDimensions({ width: Constants.WIDTH_DEVICE - 10, height: dimensions.height });
+          setDimensions({ width: Constants.WIDTH_DEVICE - 10, height: 700 });
         }
-      }
+      }, (error) => {
+        console.error('Failed to get image size:', error);
+      });
     }
-  }, [dimensions]);
+
+    return () => {
+      console.log("No image get dimension ");
+    }
+
+  }, [image]);
 
   const resetText = () => {
     setValueText('Text')
@@ -173,7 +181,6 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
     setIsRatio(false);
     setIsElement(false);
     setIsDraw(false);
-    setIsCropImage(false);
     setIsActive('');
   }
 
@@ -207,17 +214,16 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
             setIsDraw(true)
           }
             break;
-          case 'Crop': {
-            setIsCropImage(true);
-          }
-            break;
           default:
             break;
         }
       }
       else {
-        cancelTool();
-        cancelToolText();
+        setIsActive('');
+        setIsToolText(false);
+        setIsRatio(false)
+        setIsElement(false);
+        setIsDraw(false);
       }
     } catch (error) {
       console.log("Error handle active tool: " + error);
@@ -581,11 +587,6 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
 
   const shareImage = () => { };
 
-  useEffect(() => {
-    console.log(dimensions);
-  }, [dimensions])
-
-
   return (
     <View style={styles.container}>
       <Header
@@ -599,8 +600,7 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
 
       <View
         style={{
-          flex: 1, justifyContent: 'center', alignItems: 'center', overflow: 'hidden',
-          width: Constants.WIDTH_DEVICE, height: 700
+          flex: 1, justifyContent: 'center', alignItems: 'center',
         }}>
         <ViewShot ref={viewShotRef} style={[styles.boxImage, { width: dimensions?.width, height: dimensions?.height }]} options={options} >
           {
@@ -625,6 +625,7 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
                     }
                   }}
                 >
+
                   <Draw
                     clearDraw={() => { }}
                     isDraw={isDraw}
@@ -688,14 +689,13 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
                     onLayout={(event) => {
                       const { x, y, height, width } = event.nativeEvent.layout;
                       setSizeDraw({ width: width, height: height });
-                      console.log(width, height);
                     }}
                     style={[{
                       width: valueRatio > 0 ? '100%' : dimensions?.width,
                       height: valueRatio > 0 ? null : dimensions?.height,
                       resizeMode: valueRatio > 0 ? 'cover' : 'contain',
                       aspectRatio: valueRatio > 0 ? valueRatio : undefined,
-                    }]} />
+                    },]} />
                 </View>
               </ImageZoom>
               : null
@@ -718,20 +718,12 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
               <TouchableOpacity style={[styles.btnEditText]} onPress={handleNoSaveChange}>
                 <IonIcon name="close-outline" size={30} color={colors.black} />
               </TouchableOpacity>
-              <TouchableOpacity style={styles.btnEditText} onPress={editTextValue}>
+              <TouchableOpacity style={styles.btnEditText} onPress={() => { editTextValue() }}>
                 <IonIcon name="checkmark" size={30} color={colors.black} />
               </TouchableOpacity>
             </View>
           </View>
         </Modal>
-        {
-          isCropImage ?
-            <CropImage
-              image={image}
-              setImage={(image: string) => { setImage(image) }}
-              setDimensions={(value: any) => { setDimensions({ width: value.width, height: value.height }) }}
-            /> : null
-        }
         {
           isZoomImage ?
             <LogoSize
@@ -807,7 +799,6 @@ const Edit: React.FC<EditProps> = ({ navigation }) => {
               imageLogo={imageLogo}
               uriImage={(value: string) => setImage(value)}
               uriLogo={(value: string) => { addComponentLogo(value) }}
-              setDimensions={(value: any) => { setDimensions({ width: value.width, height: value.height }) }}
               handleActiveTool={(value: string) => handleActiveTool(value)}
             />
             :
