@@ -9,9 +9,10 @@ import OpacityText from "./OpacityText";
 import Ratio from "./Ratio";
 import TextSize from "./TextSize";
 import ToolText from "./ToolText";
+import CropImage from "./CropImage";
 
 export { 
     TextSize, OpacityText, Ratio, FontText, 
     ColorText, LogoSize, Element, ChangeEdit,
-    Draw, FooterEdit, ToolText
+    Draw, FooterEdit, ToolText, CropImage
 }
