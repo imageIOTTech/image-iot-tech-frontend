@@ -1,42 +1,94 @@
 import { createSlice } from "@reduxjs/toolkit"
+import UserResponseModel from "../models/UserResponse";
+import { fetchLogin, fetchOtp, fetchRefreshToken, fetchRegister } from "../hooks/fetchUser";
 
-const initialState = {
+type initialStateProps = {
+    isAuthenticated: boolean,
+    message: string,
+    status: string,
+    user: UserResponseModel,
+}
+
+const initialState: initialStateProps = {
     isAuthenticated: false,
-    accessToken: null,
-    tokenType: null,
-    refreshToken: null,
-    id: null,
-    name: null,
-    email: null,
-    roles: null,
+    message: '',
+    status: '',
+    user: {
+        accessToken: '',
+        tokenType: '',
+        refreshToken: '',
+        id: '',
+        name: '',
+        email: '',
+        roles: '',
+    }
 }
 
 const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
-        loginSuccess: (state, action) => {
-            state.isAuthenticated = true;
-            state.accessToken = action.payload.accessToken;
-            state.tokenType = action.payload.tokenType;
-            state.refreshToken = action.payload.refreshToken;
-            state.id = action.payload.id;
-            state.name = action.payload.name;
-            state.email = action.payload.email;
-            state.roles = action.payload.roles;
+        logout: () => initialState,
+        resetStatus: (state, action) => {
+            state.status = action.payload;
         },
-        logout: (state) => {
-            state.isAuthenticated = false;
-            state.accessToken = null;
-            state.tokenType = null;
-            state.refreshToken = null;
-            state.id = null;
-            state.name = null;
-            state.email = null;
-            state.roles = null;
-        },
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(fetchLogin.pending, (state) => {
+                //Pending
+            })
+            .addCase(fetchLogin.fulfilled, (state, action) => {
+                //Sucessful
+                if (action.payload == 200) {
+                    state.status = "Login done"
+                }
+            })
+            .addCase(fetchLogin.rejected, (state, action) => {
+                //Reject
+            })
+            .addCase(fetchOtp.pending, (state, action) => {
+                //Pending
+
+            })
+            .addCase(fetchOtp.fulfilled, (state, action) => {
+                state.isAuthenticated = true;
+                const user = action.payload;
+                state.user.accessToken = user.accessToken;
+                state.user.tokenType = user.tokenType;
+                state.user.refreshToken = user.refreshToken;
+                state.user.id = user.id;
+                state.user.name = user.name;
+                state.user.email = user.email;
+                state.user.roles = user.roles;
+            })
+            .addCase(fetchOtp.rejected, (state, action) => {
+                //Reject
+            })
+            .addCase(fetchRegister.pending, (state, action) => {
+                //Pending
+            })
+            .addCase(fetchRegister.fulfilled, (state, action) => {
+                //Sucessful
+                if (action.payload == 200) {
+                    state.status = "Register done"
+                }
+            })
+            .addCase(fetchRegister.rejected, (state, action) => {
+                //Reject
+            })
+            .addCase(fetchRefreshToken.pending, (state, action) => {
+                //Pending
+            })
+            .addCase(fetchRefreshToken.fulfilled, (state, action) => {
+                state.user.refreshToken = action.payload.refreshToken;
+                state.user.accessToken = action.payload.accessToken;
+            })
+            .addCase(fetchRefreshToken.rejected, (state, action) => {
+                //Pending
+            })
     },
 });
 
-export const { loginSuccess, logout } = authSlice.actions;
+export const { logout, resetStatus } = authSlice.actions;
 export default authSlice.reducer;

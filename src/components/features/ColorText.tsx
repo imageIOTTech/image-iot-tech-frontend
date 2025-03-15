@@ -27,8 +27,6 @@ const ColorText: React.FC<ColorTextProps> = (props) => {
     };
 
     const renderItemColor = ({ item }: { item: string }) => {
-
-
         return (
             <Pressable
                 style={[styles.boxColorItem,

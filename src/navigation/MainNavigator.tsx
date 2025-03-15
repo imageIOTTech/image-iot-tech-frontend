@@ -15,7 +15,7 @@ export type MainStackParamList = {
   Login: undefined;
   Welcome: undefined;
   Register: undefined;
-  Otp: {email : String};
+  Otp: {email : string};
   Folder: undefined;
 };
 

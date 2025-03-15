@@ -3,6 +3,8 @@ import { StyleSheet, Animated, PanResponder, PanResponderInstance } from "react-
 interface DraggableItemProps {
     children: React.ReactNode; // Add children node
     onDown: () => void; // Funtion when drop down 
+    initialX?: number;
+    initialY?: number;
 }
 
 interface DraggableItemState {
@@ -17,17 +19,14 @@ class DraggableItem extends Component<DraggableItemProps, DraggableItemState> {
     private panListenerId?: string;
 
     constructor(props: DraggableItemProps) {
+
         super(props);
         this.state = {
-            pan: new Animated.ValueXY(),
+            pan: new Animated.ValueXY({ x: this.props.initialX || 0, y: this.props.initialY || 0 }),
             opacity: new Animated.Value(1),
             showItem: true,
         };
-        this._val = { x: 0, y: 0 };
-    }
-
-    componentDidMount() {
-        this.state.pan.addListener((value) => this._val = value);
+        this._val = { x: this.props.initialX || 0, y: this.props.initialY || 0 };
 
         this.panResponder = PanResponder.create({
             onStartShouldSetPanResponder: () => true,
@@ -40,7 +39,7 @@ class DraggableItem extends Component<DraggableItemProps, DraggableItemState> {
             },
             onPanResponderMove: Animated.event(
                 [null, { dx: this.state.pan.x, dy: this.state.pan.y }],
-                { useNativeDriver: false }
+                { useNativeDriver: false },
             ),
             onPanResponderRelease: () => {
                 // Logic when dropping an element (e.g. into a drop area)
@@ -48,7 +47,11 @@ class DraggableItem extends Component<DraggableItemProps, DraggableItemState> {
                 this.props.onDown()
             }
         });
+    }
 
+    componentDidMount() {
+        this.state.pan.setValue({ x: this.props.initialX || 0, y: this.props.initialY || 0 });
+        this.state.pan.addListener((value) => this._val = value);
     }
 
     componentWillUnmount() {

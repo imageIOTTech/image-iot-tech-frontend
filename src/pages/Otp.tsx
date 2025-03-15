@@ -1,15 +1,16 @@
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { MainStackParamList } from '../navigation/MainNavigator'
 import { OtpInput } from 'react-native-otp-entry';
 import { colors } from '../styles';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../store/Store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../store/Store';
 import { RouteProp } from '@react-navigation/native';
 import Font5Icon from 'react-native-vector-icons/FontAwesome5'
-import { loginSuccess } from '../store/authSlice';
-import { SERVER_PORT } from '../config/env';
+import OtpModel from '../models/Otp';
+import { fetchOtp } from '../hooks/fetchUser';
+import { resetStatus } from '../store/authSlice';
 
 type OtpScreenProp = StackNavigationProp<MainStackParamList, 'Otp'>;
 type OtpScreenRouterProp = RouteProp<MainStackParamList, 'Otp'>;
@@ -18,39 +19,24 @@ type OtpProps = {
     navigation: OtpScreenProp;
     route: OtpScreenRouterProp;
 }
-const Otp: React.FC<OtpProps> = ({ navigation, route}) => {
+const Otp: React.FC<OtpProps> = ({ navigation, route }) => {
 
     const [optValue, setOtpValue] = useState<string>('');
-    const {email} = route.params;
+    const { email } = route.params;
 
     const dispatch = useDispatch<AppDispatch>();
-
+    const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated)
+    
     const handleVerify = async () => {
         try {
             if (optValue.length == 6 && optValue) {
-                const response = await fetch(`${SERVER_PORT}/user/verify-otp`,
-                    {
-                        method: 'POST',
-                        headers: {
-                            Accept: 'application/json',
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            email,
-                            otp: optValue
-                        })
-                    });
-                if (response.status === 200) {
-                    const json = response.json();
-                    //Save user and token
-                    json.then((result) => {
-                        console.log(result)
-                        dispatch(loginSuccess(result));
-                        navigation.navigate('Home');
-                    });
+                const otp: OtpModel = {
+                    email: email,
+                    otp: optValue
                 }
-                else {
-                    Alert.alert('Otp fail', 'Please enter your code again');
+                dispatch(fetchOtp(otp));
+                if (isAuthenticated) {
+                    navigation.navigate('Home');
                 }
             }
             else {
