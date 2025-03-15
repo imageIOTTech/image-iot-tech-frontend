@@ -5,7 +5,6 @@ import Font5Icon from 'react-native-vector-icons/FontAwesome5'
 import IonIcon from 'react-native-vector-icons/Ionicons'
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons'
 import { colors } from '../../styles'
-import { launchImageLibrary } from 'react-native-image-picker'
 import ImageCropPicker from 'react-native-image-crop-picker'
 
 type FooterEditProps = {
@@ -31,30 +30,7 @@ const FooterEdit: React.FC<FooterEditProps> = (props) => {
         if (!image) openImageLibrary('Photos');
     }, [])
 
-    // Open the image library
-    // const openImageLibrary = async (text: string) => {
-    //     launchImageLibrary({ mediaType: 'photo', selectionLimit: 1 }, async (response) => {
-    //         if (response.didCancel) {
-    //             console.log('User cancelled image picker');
-    //         } else if (response.errorCode) {
-    //             console.log('Image Picker Error: ', response.errorMessage);
-    //         } else if (response.assets && response.assets.length > 0) {
-    //             const uri = response.assets[0].uri;
-    //             if (uri) {
-    //                 if (text == 'Photos') {
-    //                     uriImage(uri)
-    //                 }
-    //                 else {
-    //                     uriLogo(uri)
-    //                 }
-    //             }
-    //         } else {
-    //             console.log('No assets found in response');
-    //         }
-    //     });
-    // };
-
-    // Open the image Library 2
+    // Open the image Library 
     const openImageLibrary = (type: string) => {
         ImageCropPicker.openPicker({
             width: 500,
